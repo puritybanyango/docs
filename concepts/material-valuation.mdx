@@ -1,7 +1,7 @@
 ---
 title: "Material Valuation: How eLoop Tiers E-Waste Batches"
 sidebarTitle: "Material Valuation"
-description: "eLoop automatically assigns every finalized batch a HIGH, MEDIUM, or LOW value tier based on AI-classified components and a material composition lookup table."
+description: "eLoop automatically assigns every finalized batch a HIGH, MEDIUM, or LOW value tier based on AI-classified components and a material composition table."
 ---
 
 One of the biggest challenges in e-waste processing is knowing what a pile of scrap is actually worth before you commit to sorting, listing, or buying it. eLoop removes that uncertainty entirely. Every time you finalize a batch, the platform automatically assigns it a **value tier** — **HIGH**, **MEDIUM**, or **LOW** — calculated from the components the edge AI classified during scanning and a built-in material composition lookup table. No manual estimation, no spreadsheets, no guesswork.
@@ -12,10 +12,10 @@ Valuation happens automatically in the background as you sort. Here is the seque
 
 <Steps>
   <Step title="Component Classification">
-    As items pass the Raspberry Pi camera on your sorting line, the YOLOv8 model identifies each one across 19 component classes covering PCB and battery types. Every classification result is streamed to the backend and associated with your open batch.
+    As items pass the Raspberry Pi camera on your sorting line, the YOLOv8 model identifies each one, classifying it as a PCB or battery type. Every classification result is streamed to the backend and associated with your open batch.
   </Step>
   <Step title="Material Composition Lookup">
-    Each classified component type is cross-referenced against eLoop's internal **material composition table**. This table maps each component class to its estimated percentages and weights of precious and critical metals — including gold, silver, copper, cobalt, lithium, aluminium, iron, nickel, and lead.
+    Each classified component type is cross-referenced against eLoop's built-in **material composition table**. This table maps each component class to its estimated percentages and weights of precious and critical metals — including gold, silver, copper, cobalt, lithium, aluminium, iron, nickel, and lead.
   </Step>
   <Step title="Batch Averaging">
     The total component weight estimates are aggregated and averaged across every scanned item in the batch. This produces a single composite material profile for the entire lot.

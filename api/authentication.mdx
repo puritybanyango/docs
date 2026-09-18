@@ -1,7 +1,7 @@
 ---
-title: "API Authentication: JWT Tokens for eLoop"
+title: "eLoop API Authentication: JWT Tokens and Login Flow"
 sidebarTitle: "Authentication"
-description: "Learn how to obtain a JWT Bearer token by logging in and how to attach it to every eLoop API request to authenticate successfully."
+description: "Obtain a JWT Bearer token via POST /auth/login, attach it to protected eLoop API requests, and reset passwords with the two-step forgot-password flow."
 ---
 
 The eLoop API uses stateless JWT (JSON Web Token) authentication. Every request to a protected endpoint must include your token in the `Authorization: Bearer` header. Tokens are issued at login, scoped to your user's company and role, and expire after a configurable window — by default, 30 minutes. There are no cookies or server-side sessions involved.

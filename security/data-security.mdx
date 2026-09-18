@@ -1,10 +1,10 @@
 ---
-title: "Data Security and Privacy in the eLoop Platform"
+title: "eLoop Data Security: Privacy and Protection Commitments"
 sidebarTitle: "Data Security"
-description: "Understand how eLoop protects your organization's data in transit and at rest, from the sorting-line camera to the cloud."
+description: "Understand how eLoop protects your data in transit and at rest, with TLS 1.3 encryption, edge privacy, and role-based access controls."
 ---
 
-eLoop is designed with security at every layer — from the edge camera on your sorting line to the cloud database that stores your batch and procurement data. This page explains the protections in place so you can understand exactly how your organization's information is handled.
+eLoop is designed with security at every layer — from the edge device on your sorting line to the cloud that stores your batch and procurement data. This page explains the protections in place so you can understand exactly how your organization's information is handled.
 
 ## Data in Transit
 
@@ -14,7 +14,7 @@ This applies across every surface that connects to eLoop:
 
 <CardGroup cols={3}>
   <Card title="Sorting-Line Hardware" icon="microchip">
-    The Raspberry Pi on your sorting line sends classification results to the cloud over an encrypted HTTPS connection.
+    The edge device on your sorting line sends classification results to the cloud over an encrypted HTTPS connection.
   </Card>
   <Card title="Operator Web App" icon="monitor">
     Every action in the web dashboard — logging in, submitting batches, managing workers — travels over TLS 1.3.
@@ -24,21 +24,19 @@ This applies across every surface that connects to eLoop:
   </Card>
 </CardGroup>
 
-<Note>
-  All production traffic is routed through the Heroku-managed TLS layer. You do not need to configure any client-side certificates or additional TLS settings — encryption is handled automatically for all eLoop connections.
-</Note>
-
 ## Edge Privacy
 
-The Raspberry Pi camera unit on your sorting line classifies e-waste components locally, on the device itself. Only the lightweight classification result — a component type label such as "PCB" or "battery" — is sent to the eLoop cloud. Raw video and image data are processed entirely on-site and are never transmitted to or stored in the cloud.
+The edge device on your sorting line classifies e-waste components locally, on the device itself. Only the lightweight classification result — a component type label such as "PCB" or "battery" — is sent to the eLoop cloud. Raw video and image data are processed entirely on-site and are never transmitted to or stored in the cloud.
 
 This design means sensitive footage of your facility stays within your facility. You get the AI classification intelligence without exposing your operations to unnecessary data transmission.
 
 ## Authentication Security
 
-Every API request to eLoop is authenticated independently using a JWT (JSON Web Token). Tokens are stateless — there is no centralized server session to compromise. Each token is scoped to the authenticated user's specific role and company, so a token belonging to one user cannot be used to access another user's data or perform actions outside that user's role.
+Every API request to eLoop is authenticated using a JWT (JSON Web Token). Tokens are stateless and scoped to the authenticated user's specific role and company, so a token belonging to one user cannot access another user's data or perform actions outside that user's permitted role.
 
-Sign in is protected by rate limiting and account lockout policies to guard against automated credential-guessing attacks. After a defined number of failed attempts, accounts are temporarily locked as an additional safeguard.
+Two-factor authentication (2FA) using a time-based one-time passcode (TOTP) is **mandatory for all users** — it is not optional and is not limited to Admin accounts. A valid password alone is never sufficient to obtain an access token; both factors must be verified.
+
+Sign-in is also protected by rate limiting and account lockout policies. After three consecutive failed attempts, an account is locked for 15 minutes to guard against automated credential-guessing attacks.
 
 ## Multi-Tenant Isolation
 
@@ -65,5 +63,9 @@ Access within your organization is governed by three roles. Admins assign roles 
 If an employee leaves your organization or changes roles, ask your Admin to deactivate or update their account immediately. Deactivating an account invalidates all active tokens for that user at the next request.
 
 <Tip>
-  Register your password recovery email to a company-controlled inbox rather than a personal email address. This ensures that if an employee leaves, your organization retains control of the account recovery process and is not locked out of critical admin access.
+  Register your password recovery email to a company-controlled inbox rather than a personal email address. This ensures that if an employee leaves, your organization retains control of the account recovery process and is not locked out of critical Admin access.
 </Tip>
+
+## Password Storage
+
+User passwords are never stored in plaintext. eLoop uses an industry-standard, salted adaptive hashing algorithm, which means that even in the unlikely event of a data breach, stored password records cannot be reversed into the original credentials.

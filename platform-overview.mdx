@@ -17,27 +17,21 @@ Keeping inference on the edge means:
 - **Resilience.** The sorting line continues to classify even if the cloud connection is momentarily degraded.
 
 <Note>
-  The first scan after a period of inactivity may take **10–30 seconds** to begin streaming results. This is a normal cold-start delay as the cloud server wakes up from an idle state. Subsequent scans within the same active session start immediately.
+  The first scan after a period of inactivity may take **10–30 seconds** to begin streaming results while the cloud service resumes from an idle state. Subsequent scans within the same active session start immediately.
 </Note>
 
 ## Cloud Backend
 
-The eLoop API is a **FastAPI** server hosted on Heroku and backed by a **PostgreSQL** relational database. It acts as the central logic engine for the entire platform — validating incoming classification events from the edge, running material composition calculations, assigning value tiers, managing batch lifecycle state, and serving batch data to both the web app and the mobile app.
+The eLoop API is a **FastAPI** server backed by a **PostgreSQL** relational database. It acts as the central logic engine for the entire platform — validating incoming classification events from the edge, running material composition calculations, assigning value tiers, managing batch lifecycle state, and serving batch data to both the web app and the mobile app.
 
 Key technical details you should know:
 
 | Property | Value |
 |---|---|
 | **Framework** | FastAPI (async Python, built on Starlette and Pydantic) |
-| **Database** | PostgreSQL (relational; stores inventory records, user accounts, and lifecycle logs) |
 | **Transport Security** | HTTPS / TLS 1.3 enforced on all production traffic |
 | **Authentication** | Stateless JWT tokens, passed as `Authorization: Bearer <TOKEN>` |
 | **Data Format** | `application/json` for all request and response payloads |
-
-**Base URLs:**
-
-- **Production:** `https://herokuapp.com` — used by deployed Raspberry Pi units, the Operator PWA, and the mobile app
-- **Local Development:** `http://127.0.0.1:8000` — used for offline debugging and feature development
 
 ## Web App (Operator PWA)
 

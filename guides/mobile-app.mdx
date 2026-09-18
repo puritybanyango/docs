@@ -31,9 +31,14 @@ When you open the eLoop mobile app for the first time, you will land on the sign
 
 1. Enter your **Email** and **Password** — the same credentials you use on the web app.
 2. Tap **Sign In**.
-3. Your session remains active until you explicitly log out. The app securely stores your session so you do not need to sign in again each time you reopen it.
+3. Complete the **two-factor authentication (TOTP)** step. The first time you sign in, the app walks you through setting up an authenticator app and confirming the setup code. On subsequent logins, you simply enter the current six-digit code from your authenticator.
+4. Your session remains active until you explicitly log out. The app securely stores your session token so you do not need to sign in again each time you reopen it.
 
 To end your session, open your profile settings and tap **Log Out**.
+
+<Note>
+  Two-factor authentication is required for all eLoop mobile app accounts. Make sure you have an authenticator app — such as Google Authenticator or Authy — installed on a separate device before signing in for the first time.
+</Note>
 
 ## Browsing the Catalog
 
@@ -69,5 +74,6 @@ If your account has the **Admin** role, you will see a **Workers** tab in the bo
 - **Add a new worker** — tap the add button, enter the new user's first name, last name, email, and assign a role (Admin or Worker).
 - **Update a profile** — tap any worker to edit their name, email, or role.
 - **Deactivate an account** — suspend a team member's access without permanently deleting their records. This is the recommended approach when someone leaves the company.
+- **Reset two-factor authentication** — if a worker loses access to their authenticator app, use the reset TOTP option on their profile to clear the existing setup so they can enrol a new authenticator on their next login.
 
 All changes made in the Workers tab on mobile are reflected immediately across the platform, including the web app.

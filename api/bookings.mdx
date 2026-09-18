@@ -4,7 +4,7 @@ sidebarTitle: "Bookings"
 description: "Submit and manage batch procurement requests in the Digital Showroom. Refinery buyers book verified lots; recycling centers confirm or cancel requests."
 ---
 
-The `/api/booking` endpoints power the procurement workflow in the Digital Showroom. Refinery buyers use these to submit booking requests on verified batches, and recycling centers use them to confirm or cancel those requests.
+The `/api/booking` endpoints power the procurement workflow in the Digital Showroom. Refinery buyers use these to submit booking requests on verified batches, and recycling centers use them to confirm or cancel those requests. All requests require an `Authorization: Bearer TOKEN` header obtained from [`POST /auth/login`](/api/auth#post-authlogin).
 
 When a booking is created, it opens in an `in_progress` state. The recycling center operator then confirms or cancels it, and the linked batch status advances in parallel:
 
@@ -19,21 +19,9 @@ Batch:   Listed      → Booked    → Completed
 
 Submit a booking request for a listed batch in the Digital Showroom. Call this endpoint when a refinery buyer wants to claim a batch and initiate the procurement process.
 
-**Endpoint**
-```
-POST https://eloop-api.herokuapp.com/api/booking
-```
-
 <Note>
   A batch can only have one active booking at a time. If a batch already has an `in_progress` or `confirmed` booking against it, subsequent POST requests for the same `batch_id` will be rejected. Check the batch status using `GET /api/batches/{batch_id}` before submitting a booking request.
 </Note>
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-| `Content-Type` | `application/json` |
 
 ### Request body
 
@@ -49,11 +37,11 @@ POST https://eloop-api.herokuapp.com/api/booking
 
 ```bash
 curl -X POST https://eloop-api.herokuapp.com/api/booking \
-  -H "Authorization: Bearer TOKEN" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "batch_id": "bat_01HXYZ654321",
-    "user_id": "usr_55REF001"
+    "user_id": "user_03ab7c1f2d9xyz"
   }'
 ```
 
@@ -63,7 +51,7 @@ curl -X POST https://eloop-api.herokuapp.com/api/booking \
 {
   "id": "bkg_01HXYZ111222",
   "batch_id": "bat_01HXYZ654321",
-  "user_id": "usr_55REF001",
+  "user_id": "user_03ab7c1f2d9xyz",
   "status": "in_progress",
   "created_at": "2024-06-02T08:30:00Z"
 }
@@ -97,17 +85,6 @@ curl -X POST https://eloop-api.herokuapp.com/api/booking \
 
 Retrieve the full details of a specific booking record, including its current status and associated batch and buyer IDs.
 
-**Endpoint**
-```
-GET https://eloop-api.herokuapp.com/api/booking/{booking_id}
-```
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-
 ### Path parameters
 
 <ParamField path="booking_id" type="string" required>
@@ -118,7 +95,7 @@ GET https://eloop-api.herokuapp.com/api/booking/{booking_id}
 
 ```bash
 curl -X GET https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
-  -H "Authorization: Bearer TOKEN"
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Example response
@@ -127,7 +104,7 @@ curl -X GET https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
 {
   "id": "bkg_01HXYZ111222",
   "batch_id": "bat_01HXYZ654321",
-  "user_id": "usr_55REF001",
+  "user_id": "user_03ab7c1f2d9xyz",
   "status": "confirmed",
   "created_at": "2024-06-02T08:30:00Z",
   "updated_at": "2024-06-02T09:15:00Z"
@@ -166,17 +143,6 @@ curl -X GET https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
 
 Retrieve all booking records submitted by a specific refinery buyer. Use this to display a buyer's full procurement history in the Digital Showroom.
 
-**Endpoint**
-```
-GET https://eloop-api.herokuapp.com/api/booking/{user_id}
-```
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-
 ### Path parameters
 
 <ParamField path="user_id" type="string" required>
@@ -186,8 +152,8 @@ GET https://eloop-api.herokuapp.com/api/booking/{user_id}
 ### Example request
 
 ```bash
-curl -X GET https://eloop-api.herokuapp.com/api/booking/usr_55REF001 \
-  -H "Authorization: Bearer TOKEN"
+curl -X GET https://eloop-api.herokuapp.com/api/booking/user_03ab7c1f2d9xyz \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Example response
@@ -197,7 +163,7 @@ curl -X GET https://eloop-api.herokuapp.com/api/booking/usr_55REF001 \
   {
     "id": "bkg_01HXYZ111222",
     "batch_id": "bat_01HXYZ654321",
-    "user_id": "usr_55REF001",
+    "user_id": "user_03ab7c1f2d9xyz",
     "status": "confirmed",
     "created_at": "2024-06-02T08:30:00Z",
     "updated_at": "2024-06-02T09:15:00Z"
@@ -205,7 +171,7 @@ curl -X GET https://eloop-api.herokuapp.com/api/booking/usr_55REF001 \
   {
     "id": "bkg_01HXYZ111200",
     "batch_id": "bat_01HXYZ654310",
-    "user_id": "usr_55REF001",
+    "user_id": "user_03ab7c1f2d9xyz",
     "status": "cancelled",
     "created_at": "2024-05-28T14:00:00Z",
     "updated_at": "2024-05-28T16:45:00Z"
@@ -219,21 +185,9 @@ curl -X GET https://eloop-api.herokuapp.com/api/booking/usr_55REF001 \
 
 Update the status of a booking. Recycling center operators use this endpoint to confirm or cancel a pending booking request from a refinery buyer.
 
-**Endpoint**
-```
-PATCH https://eloop-api.herokuapp.com/api/booking/{booking_id}
-```
-
 <Tip>
   Confirming a booking automatically transitions the linked batch status from `listed` to `booked`. You do not need to call `PUT /api/batches/{batch_id}` separately — the status change cascades through both records in a single operation.
 </Tip>
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-| `Content-Type` | `application/json` |
 
 ### Path parameters
 
@@ -253,7 +207,7 @@ PATCH https://eloop-api.herokuapp.com/api/booking/{booking_id}
 
 ```bash
 curl -X PATCH https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
-  -H "Authorization: Bearer TOKEN" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "confirmed"
@@ -264,7 +218,7 @@ curl -X PATCH https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
 {
   "id": "bkg_01HXYZ111222",
   "batch_id": "bat_01HXYZ654321",
-  "user_id": "usr_55REF001",
+  "user_id": "user_03ab7c1f2d9xyz",
   "status": "confirmed",
   "created_at": "2024-06-02T08:30:00Z",
   "updated_at": "2024-06-02T09:15:00Z"
@@ -275,7 +229,7 @@ curl -X PATCH https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
 
 ```bash
 curl -X PATCH https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
-  -H "Authorization: Bearer TOKEN" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "cancelled"
@@ -286,7 +240,7 @@ curl -X PATCH https://eloop-api.herokuapp.com/api/booking/bkg_01HXYZ111222 \
 {
   "id": "bkg_01HXYZ111222",
   "batch_id": "bat_01HXYZ654321",
-  "user_id": "usr_55REF001",
+  "user_id": "user_03ab7c1f2d9xyz",
   "status": "cancelled",
   "created_at": "2024-06-02T08:30:00Z",
   "updated_at": "2024-06-02T09:45:00Z"

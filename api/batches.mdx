@@ -1,10 +1,10 @@
 ---
-title: "Batches API: Track E-Waste Lots from Scan to Sale"
+title: "Batches API: Manage E-Waste Lots from Scan to Sale"
 sidebarTitle: "Batches"
 description: "Create, value, and progress e-waste lots through their full lifecycle. Each batch aggregates AI-scanned component data from a single sorting session."
 ---
 
-The `/api/batches` endpoints manage the full lifecycle of e-waste lots — from the start of a sorting session through automated valuation, Digital Showroom listing, booking, and completion. Each batch aggregates the scanned component data from a single sorting run.
+The `/api/batches` endpoints manage the full lifecycle of e-waste lots — from the start of a sorting session through automated valuation, Digital Showroom listing, booking, and completion. Each batch aggregates the scanned component data from a single sorting run. All requests require an `Authorization: Bearer TOKEN` header obtained from [`POST /auth/login`](/api/auth#post-authlogin).
 
 A batch moves through four sequential stages:
 
@@ -20,18 +20,6 @@ Create a batch to open a sorting session, use `PATCH` to finalize and value it o
 
 Create a new batch and open a sorting session. Call this endpoint when an operator begins processing a new e-waste lot on the sorting line. The Raspberry Pi 5 edge hardware will associate all subsequent classification events with this batch.
 
-**Endpoint**
-```
-POST https://eloop-api.herokuapp.com/api/batches
-```
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-| `Content-Type` | `application/json` |
-
 ### Request body
 
 <ParamField body="user_id" type="string" required>
@@ -42,10 +30,10 @@ POST https://eloop-api.herokuapp.com/api/batches
 
 ```bash
 curl -X POST https://eloop-api.herokuapp.com/api/batches \
-  -H "Authorization: Bearer TOKEN" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "user_id": "usr_98ABC789"
+    "user_id": "user_07cd3e9f1a2bgh"
   }'
 ```
 
@@ -55,7 +43,7 @@ curl -X POST https://eloop-api.herokuapp.com/api/batches \
 {
   "id": "bat_01HXYZ654321",
   "status": "in_progress",
-  "user_id": "usr_98ABC789",
+  "user_id": "user_07cd3e9f1a2bgh",
   "created_at": "2024-06-01T11:00:00Z"
 }
 ```
@@ -84,17 +72,6 @@ curl -X POST https://eloop-api.herokuapp.com/api/batches \
 
 Retrieve the valuation scores, component summary, and current status for a specific batch.
 
-**Endpoint**
-```
-GET https://eloop-api.herokuapp.com/api/batches/{batch_id}
-```
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-
 ### Path parameters
 
 <ParamField path="batch_id" type="string" required>
@@ -105,7 +82,7 @@ GET https://eloop-api.herokuapp.com/api/batches/{batch_id}
 
 ```bash
 curl -X GET https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
-  -H "Authorization: Bearer TOKEN"
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Example response
@@ -114,9 +91,9 @@ curl -X GET https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 {
   "id": "bat_01HXYZ654321",
   "status": "listed",
-  "value_tier": "high",
+  "value_tier": "HIGH",
   "component_count": 42,
-  "user_id": "usr_98ABC789",
+  "user_id": "user_07cd3e9f1a2bgh",
   "created_at": "2024-06-01T11:00:00Z",
   "updated_at": "2024-06-01T11:45:00Z"
 }
@@ -133,7 +110,7 @@ curl -X GET https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 </ResponseField>
 
 <ResponseField name="value_tier" type="string">
-  The automated material valuation tier assigned when the batch was finalized. One of `"high"`, `"medium"`, or `"low"`. Returns `null` for batches still `in_progress`.
+  The automated material valuation tier assigned when the batch was finalized. One of `"HIGH"`, `"MEDIUM"`, or `"LOW"`. Returns `null` for batches still `in_progress`.
 </ResponseField>
 
 <ResponseField name="component_count" type="integer">
@@ -158,17 +135,6 @@ curl -X GET https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 
 Retrieve all batches created by a specific recycling center operator. Use this to review a team member's complete sorting history.
 
-**Endpoint**
-```
-GET https://eloop-api.herokuapp.com/api/batches/{user_id}
-```
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-
 ### Path parameters
 
 <ParamField path="user_id" type="string" required>
@@ -178,8 +144,8 @@ GET https://eloop-api.herokuapp.com/api/batches/{user_id}
 ### Example request
 
 ```bash
-curl -X GET https://eloop-api.herokuapp.com/api/batches/usr_98ABC789 \
-  -H "Authorization: Bearer TOKEN"
+curl -X GET https://eloop-api.herokuapp.com/api/batches/user_07cd3e9f1a2bgh \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Example response
@@ -189,18 +155,18 @@ curl -X GET https://eloop-api.herokuapp.com/api/batches/usr_98ABC789 \
   {
     "id": "bat_01HXYZ654321",
     "status": "listed",
-    "value_tier": "high",
+    "value_tier": "HIGH",
     "component_count": 42,
-    "user_id": "usr_98ABC789",
+    "user_id": "user_07cd3e9f1a2bgh",
     "created_at": "2024-06-01T11:00:00Z",
     "updated_at": "2024-06-01T11:45:00Z"
   },
   {
     "id": "bat_01HXYZ654320",
     "status": "completed",
-    "value_tier": "medium",
+    "value_tier": "MEDIUM",
     "component_count": 27,
-    "user_id": "usr_98ABC789",
+    "user_id": "user_07cd3e9f1a2bgh",
     "created_at": "2024-05-30T09:00:00Z",
     "updated_at": "2024-05-31T14:20:00Z"
   }
@@ -213,20 +179,9 @@ curl -X GET https://eloop-api.herokuapp.com/api/batches/usr_98ABC789 \
 
 Finalize a batch once the sorting session is complete. This triggers automated material valuation — eLoop analyzes the aggregated component data from the edge AI, assigns a value tier (`HIGH`, `MEDIUM`, or `LOW`), and transitions the batch status from `in_progress` to `listed`, making it visible in the Digital Showroom.
 
-**Endpoint**
-```
-PATCH https://eloop-api.herokuapp.com/api/batches/{batch_id}
-```
-
 <Note>
   This is the **"Finish Batch"** action in the Operator PWA. Ensure the sorting session is fully complete and the Raspberry Pi 5 has submitted all classification events before calling this endpoint. Finalizing a batch with incomplete scan data may result in a lower value tier than expected.
 </Note>
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
 
 ### Path parameters
 
@@ -238,7 +193,7 @@ PATCH https://eloop-api.herokuapp.com/api/batches/{batch_id}
 
 ```bash
 curl -X PATCH https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
-  -H "Authorization: Bearer TOKEN"
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Example response
@@ -247,9 +202,9 @@ curl -X PATCH https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 {
   "id": "bat_01HXYZ654321",
   "status": "listed",
-  "value_tier": "high",
+  "value_tier": "HIGH",
   "component_count": 42,
-  "user_id": "usr_98ABC789",
+  "user_id": "user_07cd3e9f1a2bgh",
   "created_at": "2024-06-01T11:00:00Z",
   "updated_at": "2024-06-01T11:45:00Z"
 }
@@ -260,18 +215,6 @@ curl -X PATCH https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 ## PUT /api/batches/\{batch_id\}
 
 Transition a batch through its post-listing lifecycle stages. Use this endpoint to advance a batch from `listed` to `booked` when a buyer's booking is confirmed, and from `booked` to `completed` once the physical transfer of materials is finalized.
-
-**Endpoint**
-```
-PUT https://eloop-api.herokuapp.com/api/batches/{batch_id}
-```
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
-| `Content-Type` | `application/json` |
 
 ### Path parameters
 
@@ -292,7 +235,7 @@ PUT https://eloop-api.herokuapp.com/api/batches/{batch_id}
 
 ```bash
 curl -X PUT https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
-  -H "Authorization: Bearer TOKEN" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "completed"
@@ -305,9 +248,9 @@ curl -X PUT https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 {
   "id": "bat_01HXYZ654321",
   "status": "completed",
-  "value_tier": "high",
+  "value_tier": "HIGH",
   "component_count": 42,
-  "user_id": "usr_98ABC789",
+  "user_id": "user_07cd3e9f1a2bgh",
   "created_at": "2024-06-01T11:00:00Z",
   "updated_at": "2024-06-03T16:10:00Z"
 }
@@ -319,20 +262,9 @@ curl -X PUT https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321 \
 
 Delete a batch record from the system.
 
-**Endpoint**
-```
-DELETE https://eloop-api.herokuapp.com/api/batches/{batch_id}/
-```
-
 <Warning>
   Only delete batches that are still in `in_progress` status. Deleting a `listed` batch removes it from the Digital Showroom immediately, which may disrupt active buyer interest. Deleting a `booked` batch will orphan any confirmed booking against it. If you need to cancel a listed or booked batch, transition it to the appropriate status using `PUT` instead.
 </Warning>
-
-### Request headers
-
-| Header | Value |
-|--------|-------|
-| `Authorization` | `Bearer TOKEN` |
 
 ### Path parameters
 
@@ -344,7 +276,7 @@ DELETE https://eloop-api.herokuapp.com/api/batches/{batch_id}/
 
 ```bash
 curl -X DELETE https://eloop-api.herokuapp.com/api/batches/bat_01HXYZ654321/ \
-  -H "Authorization: Bearer TOKEN"
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Example response
