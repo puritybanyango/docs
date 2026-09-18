@@ -1,0 +1,122 @@
+---
+title: "Auth API: Login and Password Reset Endpoints"
+sidebarTitle: "Auth"
+description: "Authenticate users and manage passwords with the three /auth endpoints: login to obtain a JWT token, request a reset email, and set a new password."
+---
+
+The `/auth` endpoints handle user authentication. These are the only endpoints that do not require an existing token — you use them to obtain a token or reset your password. All other eLoop API endpoints require an `Authorization: Bearer TOKEN` header, which you receive from a successful call to `/auth/login`.
+
+---
+
+## POST /auth/login
+
+Authenticate with your email and password to receive a JWT access token. Include this token in the `Authorization` header of every subsequent request to protected endpoints.
+
+### Request body
+
+<ParamField body="email" type="string" required>
+  Your account email address.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Your account password.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "operator@recyclingcorp.com", "password": "secure-password"}'
+```
+
+### Example response
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}
+```
+
+### Response fields
+
+<ResponseField name="access_token" type="string">
+  The JWT token to use in the `Authorization: Bearer` header for all protected requests.
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  The token scheme. Always `"bearer"`.
+</ResponseField>
+
+---
+
+## POST /auth/forgot-password
+
+Request a password reset email. If the supplied email address is associated with an active account, eLoop sends a reset link containing a short-lived token to that address.
+
+### Request body
+
+<ParamField body="email" type="string" required>
+  The email address associated with your account.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email": "operator@recyclingcorp.com"}'
+```
+
+### Example response
+
+```json
+{
+  "message": "Password reset email sent. Please check your inbox."
+}
+```
+
+### Response fields
+
+<ResponseField name="message" type="string">
+  A confirmation string indicating that the reset email was dispatched.
+</ResponseField>
+
+---
+
+## POST /auth/reset-password
+
+Set a new password using the reset token delivered to your email. The token is single-use and expires shortly after it is issued — request a new one via `/auth/forgot-password` if it has lapsed.
+
+### Request body
+
+<ParamField body="token" type="string" required>
+  The reset token received in the password reset email.
+</ParamField>
+
+<ParamField body="new_password" type="string" required>
+  The new password to set for your account.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"token": "a1b2c3d4e5f6...", "new_password": "new-secure-password"}'
+```
+
+### Example response
+
+```json
+{
+  "message": "Password has been reset successfully. You may now log in with your new credentials."
+}
+```
+
+### Response fields
+
+<ResponseField name="message" type="string">
+  A confirmation string indicating that the password was updated successfully.
+</ResponseField>

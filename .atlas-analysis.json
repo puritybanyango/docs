@@ -1,0 +1,120 @@
+{
+  "projectType": "saas",
+  "projectName": "eLoop",
+  "projectDescription": "eLoop is an AI and IoT-driven material intelligence platform that automates the identification, valuation, and B2B trading of electronic waste components using edge computer vision and a digital showroom marketplace.",
+  "theme": "almond",
+  "primaryColor": "#8a3996",
+  "lightColor": "#c494ca",
+  "darkColor": "#dcc4e0",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "platform-overview"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/how-it-works",
+              "concepts/user-roles",
+              "concepts/batch-lifecycle",
+              "concepts/material-valuation"
+            ]
+          },
+          {
+            "group": "Using eLoop",
+            "pages": [
+              "guides/account-setup",
+              "guides/registering-devices",
+              "guides/scanning-sorting",
+              "guides/managing-batches",
+              "guides/digital-showroom",
+              "guides/mobile-app"
+            ]
+          },
+          {
+            "group": "Security & Compliance",
+            "pages": [
+              "security/authentication",
+              "security/data-security"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/overview",
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/auth",
+              "api/companies",
+              "api/users",
+              "api/device-intake",
+              "api/scanned-devices",
+              "api/batches",
+              "api/bookings"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Edge AI visual classification of PCBs and batteries using YOLOv8 on Raspberry Pi 5",
+    "Real-time material composition and value tier assignment (HIGH / MEDIUM / LOW)",
+    "Batch lifecycle tracking from intake through to completed procurement",
+    "Digital Showroom B2B marketplace for refineries to browse and book verified e-waste batches",
+    "Multi-tenant platform supporting Recycling Centers and Refinery companies",
+    "Progressive Web App for on-site sorting and a Flutter mobile app for the Digital Showroom",
+    "JWT-based authentication with role-based access control (Admin, Worker, Refinery Operator)",
+    "WebSocket-based real-time telemetry streaming from edge hardware to cloud"
+  ],
+  "publicApiSurface": [
+    "POST /auth/login",
+    "POST /auth/forgot-password",
+    "POST /auth/reset-password",
+    "POST /company/",
+    "GET /company/",
+    "GET /company/{company_id}",
+    "PATCH /company/{company_id}",
+    "DELETE /company/{company_id}",
+    "POST /user/",
+    "GET /user/",
+    "GET /user/me",
+    "PATCH /user/{user_id}",
+    "PATCH /user/{user_id}/deactivate",
+    "POST /device-intake/",
+    "GET /device-intake/",
+    "GET /device-intake/{device_id}",
+    "PATCH /device-intake/{device_id}",
+    "DELETE /device-intake/{device_id}",
+    "POST /api/scanned-devices",
+    "GET /api/scanned-devices/{scanned_device_id}",
+    "GET /api/scanned-devices/batch/{batch_id}",
+    "PATCH /api/scanned-devices/batch/{batch_id}",
+    "POST /api/batches",
+    "GET /api/batches/{batch_id}",
+    "PATCH /api/batches/{batch_id}",
+    "PUT /api/batches/{batch_id}",
+    "DELETE /api/batches/{batch_id}/",
+    "POST /api/booking",
+    "GET /api/booking/{booking_id}",
+    "GET /api/booking/{user_id}",
+    "PATCH /api/booking/{booking_id}"
+  ]
+}

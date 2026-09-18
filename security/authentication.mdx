@@ -1,0 +1,89 @@
+---
+title: "Authenticate with eLoop: JWT Tokens and Sessions"
+sidebarTitle: "Authentication"
+description: "Learn how to sign in to eLoop, use your JWT token in API requests, reset your password, and handle common authentication errors."
+---
+
+eLoop uses JWT (JSON Web Token) authentication to secure every API request. When you sign in, eLoop returns a session token tied to your account and role. You must include this token in the `Authorization` header of every subsequent API call — without it, requests will be rejected.
+
+## Signing In
+
+To authenticate, send your email address and password to the `/auth/login` endpoint. On success, eLoop returns a JWT access token you can use immediately.
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@yourcompany.com", "password": "your-password"}'
+```
+
+A successful response looks like this:
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}
+```
+
+Copy the value of `access_token` — you will use it in every subsequent request.
+
+<Warning>
+  Store your token securely. Never commit it to source control, paste it into a chat tool, or share it with anyone outside your organization. Treat it the same way you would treat a password.
+</Warning>
+
+## Using Your Token
+
+Once you have your access token, attach it to every API request as a `Bearer` token in the `Authorization` header.
+
+```bash
+curl https://eloop-api.herokuapp.com/user/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+Replace `YOUR_ACCESS_TOKEN` with the value returned at sign-in. If the token is missing, malformed, or expired, the API returns `401 Unauthorized`.
+
+## Password Reset
+
+If you forget your password, you can reset it yourself without contacting support.
+
+<Steps>
+  <Step title="Request a reset email">
+    Send a POST request to `/auth/forgot-password` with your registered email address:
+
+    ```bash
+    curl -X POST https://eloop-api.herokuapp.com/auth/forgot-password \
+      -H "Content-Type: application/json" \
+      -d '{"email": "you@yourcompany.com"}'
+    ```
+  </Step>
+  <Step title="Check your inbox">
+    Open the password reset email sent to the address you provided. The link inside is time-limited, so use it promptly.
+  </Step>
+  <Step title="Set your new password">
+    Follow the link from the email and POST your new password to `/auth/reset-password`:
+
+    ```bash
+    curl -X POST https://eloop-api.herokuapp.com/auth/reset-password \
+      -H "Content-Type: application/json" \
+      -d '{"new_password": "your-new-password", "confirm_password": "your-new-password"}'
+    ```
+
+    Once confirmed, sign in again using your new credentials to obtain a fresh token.
+  </Step>
+</Steps>
+
+## Session Management
+
+Your JWT token is stored in the browser session while you are logged in to the eLoop web app. You do not need to re-authenticate between page loads as long as your session remains active.
+
+When you log out, eLoop immediately wipes all stored authorization tokens and redirects you to the welcome screen. Anyone who attempts to use a token from a logged-out session will receive a `401 Unauthorized` response.
+
+## Common Authentication Errors
+
+If an API call fails with an authentication-related status code, use this table to diagnose and resolve the issue.
+
+| HTTP Status | Meaning | What To Do |
+|---|---|---|
+| 401 Unauthorized | Token missing or expired | Sign in again to get a new token |
+| 403 Forbidden | Your role does not permit this action | Check your account role with your Admin |
+| 422 Unprocessable Entity | Invalid request body | Check that `email` and `password` fields are present and correctly formatted |

@@ -1,0 +1,72 @@
+---
+title: "Run a Sorting Scan with Edge AI on Your Sorting Line"
+sidebarTitle: "Scanning & Sorting"
+description: "Operate your Raspberry Pi 5 edge scanning station, review real-time AI component classifications, and close a batch session from the eLoop dashboard."
+---
+
+The eLoop scanning dashboard connects directly to your Raspberry Pi 5 camera station. As components pass under the camera on the sorting line, the on-device YOLOv8 model classifies each one in real time and streams results to the dashboard — giving you an instant, continuously updated view of everything passing through your line, all without sending video off-site.
+
+## Before You Start
+
+<Warning>
+  Your Raspberry Pi 5 must be powered on and connected to the network **before** you start a scan session. If the device has been idle for more than 30 minutes, the cloud services behind the dashboard may need to wake up — expect a delay of 10–30 seconds on the first scan of that session before classifications begin appearing. Subsequent scans in the same session will be immediate.
+</Warning>
+
+Make sure your sorting line is set up and components are staged and ready before opening the scanning dashboard.
+
+## Running a Scan Session
+
+<Steps>
+
+  <Step title="Navigate to the Scanning Section">
+    From the eLoop web app dashboard, open the **Scanning** section using the main sidebar.
+  </Step>
+
+  <Step title="Confirm Your Raspberry Pi is Online">
+    Check the status indicator at the top of the scanning dashboard. It should read **Connected**. If it shows Offline or Disconnected, verify that the Raspberry Pi is powered on and reachable on your local network before proceeding.
+  </Step>
+
+  <Step title="Place Components on the Sorting Line">
+    Begin placing e-waste components on the sorting line and allow them to pass under the camera. You do not need to do anything in the app at this stage — the camera feed is already active.
+  </Step>
+
+  <Step title="Watch Real-Time Classifications Appear">
+    As each component passes under the camera, its classification appears on the dashboard. Each result shows:
+
+    - **Component label** — either `PCB` (Printed Circuit Board) or `Battery`
+    - **Confidence indicator** — how certain the model is about the classification
+    - **Tier grade** — a preliminary value indicator (High / Medium / Low)
+
+    The left-hand sidebar accumulates the scan history for the current session so you can track everything that has been processed.
+  </Step>
+
+  <Step title="Review Individual Classifications">
+    If a classification looks incorrect — for example, a component was partially obscured as it passed the camera — you can review and correct it from the scan history sidebar before closing the session.
+
+    <Tip>
+      Take a moment to review classifications before finishing a batch. Correcting any misidentified components at this stage produces the most accurate valuation and material composition report.
+    </Tip>
+  </Step>
+
+  <Step title="Finish the Batch">
+    When all components have passed through the line and you are satisfied with the classifications, click **Finish Batch**. This closes the scan session and immediately triggers automated valuation. eLoop cross-references the detected components against the material composition table and assigns an overall value tier (HIGH / MEDIUM / LOW) to the batch. The batch is then published to the Digital Showroom as a Listed item.
+  </Step>
+
+</Steps>
+
+## Understanding Classification Results
+
+The YOLOv8 model on the Raspberry Pi detects two component types:
+
+- **PCB (Printed Circuit Board)** — circuit boards recovered from computers, phones, servers, and other electronics. PCBs typically contain recoverable quantities of copper, gold, silver, and palladium, making them high-value targets for refinery procurement.
+- **Battery** — rechargeable cells and battery packs from laptops, phones, and power tools. Batteries contain lithium, cobalt, nickel, and manganese, which are critical materials for the energy storage and EV supply chains.
+
+Each detected component is cross-referenced against eLoop's material composition lookup table to estimate the percentage of each metal present and assign an individual tier. These individual tiers aggregate into the batch-level valuation you see after finishing a session.
+
+## Edge Inference Advantages
+
+Classification happens entirely on the Raspberry Pi — not in the cloud. This design gives you three practical benefits:
+
+1. **Instant feedback** — results appear on the dashboard in real time, with no round-trip to a remote server adding latency.
+2. **No internet dependency during scanning** — your sorting line keeps running even if your internet connection drops. Scan results are buffered locally and synced when connectivity is restored.
+3. **Data stays in your facility** — raw video footage never leaves the Raspberry Pi. Only the classification labels and metadata are transmitted to the eLoop platform, keeping your operational footage private.

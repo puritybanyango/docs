@@ -1,47 +1,74 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with eLoop in 5 Steps"
+sidebarTitle: "Quickstart"
+description: "Create your company account, configure your team, and process your first e-waste batch — everything you need to go live with eLoop from day one."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This guide walks you through everything you need to do to go live with eLoop. By the end, you will have a company account set up, your team members added, and — if you run a recycling center — your first device intake logged and a batch processed through scanning and valuation. Refinery buyers can follow Steps 1–3 and then head straight to the Digital Showroom.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Sign Up & Create Your Company">
+    Open the eLoop web app and click **Sign Up**. When prompted, choose your organization type — **Recycling Center** or **Refinery**. Then fill in your company details:
 
-    ```bash
-    npm install your-package
-    ```
+    - **Company Name** — your business entity name
+    - **Company Type** — selected from the drop-down (Recycling Center or Refinery)
+    - **Company Email** — the primary contact address for your organization
+
+    The company email becomes the unique identifier used to verify your Admin account at login, so use an address you control. The user who completes this step is automatically designated as the **Company Admin**.
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
-    ```
+  <Step title="Set Up Your Admin Account">
+    After your company profile is created, eLoop prompts you to set up your personal Admin account. Enter your first name, last name, email address, and a secure password (confirmed twice). Your Admin account is tied to the company email you registered in Step 1 — the system uses it to verify your elevated access level each time you sign in.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
 
-    ```bash
-    your-cli start
-    ```
+  <Step title="Add Team Members">
+    As Admin, navigate to the **Workers** section of your dashboard and click **Add Worker**. For each team member, enter their first name, last name, and email address, then assign them a role:
+
+    - **Admin** — full access to company settings, worker management, and all operational features
+    - **Worker** — operational access scoped to your company type (sorting line for recycling centers, showroom browsing for refineries)
+
+    Repeat this step for every person on your team. You can update roles or deactivate accounts at any time from the Workers section.
+  </Step>
+
+  <Step title="Register Your First Device Intake (Recycling Centers only)">
+    On your dashboard, open **Device Intake** and click **New Intake**. Log the details of your incoming e-waste shipment:
+
+    - **Device Type** — e.g., laptop, mobile phone, circuit board
+    - **Brand** — the manufacturer of the device
+    **Weight** — the total weight of the incoming batch
+    - **Source** — where the devices came from
+
+    Every batch starts with a verified intake record. This information is carried through the scanning and valuation steps and appears in the final Digital Showroom listing.
+  </Step>
+
+  <Step title="Run a Scan & Close a Batch">
+    Make sure your Raspberry Pi 5 camera is connected and pointed at the sorting line. From the dashboard, start a new sorting session. eLoop streams the live camera feed and the on-device YOLOv8 model classifies components — PCBs, batteries, and more — automatically as they pass through frame.
+
+    Review the classifications in real time and confirm any items as needed. When sorting is complete, click **Finish Batch**. eLoop immediately:
+
+    1. Calculates material composition across all classified components
+    2. Assigns a value tier — **HIGH**, **MEDIUM**, or **LOW**
+    3. Publishes the verified batch to the Digital Showroom for refinery buyers to discover
   </Step>
 </Steps>
 
 <Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
-
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
+  If you are a Refinery buyer, you can skip Steps 4 and 5. Head to the [Digital Showroom guide](/guides/digital-showroom) to learn how to browse verified batch listings and submit booking requests from the mobile app.
 </Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Account Setup" icon="gear" href="/guides/account-setup">
+    Configure your company profile, manage team roles, and set up password recovery for your organization.
+  </Card>
+  <Card title="Scanning & Sorting" icon="camera" href="/guides/scanning-sorting">
+    Learn how to connect your Raspberry Pi 5, run a live scanning session, and confirm component classifications.
+  </Card>
+  <Card title="Managing Batches" icon="box" href="/guides/managing-batches">
+    Track batch status through the full lifecycle — from In Progress to Listed, Booked, and Completed.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/overview">
+    Explore the full REST API used by the edge hardware, the Operator PWA, and the mobile app.
+  </Card>
+</CardGroup>

@@ -1,0 +1,314 @@
+---
+title: "Companies API: Manage Company Accounts in eLoop"
+sidebarTitle: "Companies"
+description: "Register and manage tenant organizations on eLoop using the /company endpoints for creating, listing, updating, and deleting company accounts."
+---
+
+The `/company` endpoints manage tenant organizations on the eLoop platform. Use these to register a new company, retrieve company records, update details, or remove an account. All requests require an `Authorization: Bearer TOKEN` header obtained from [`POST /auth/login`](/api/auth#post-authlogin).
+
+---
+
+## POST /company/
+
+Register a new company on the eLoop platform. A successful request provisions a tenant workspace and returns the company record along with activation keys used to complete the admin setup flow.
+
+### Request body
+
+<ParamField body="company_name" type="string" required>
+  The legal or trading name of the company.
+</ParamField>
+
+<ParamField body="company_type" type="string" required>
+  The operational classification of the company. Accepted values: `"recycling_center"` or `"refinery"`.
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  The primary admin email address for the company. This address receives the setup and activation emails.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/company/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "company_name": "GreenLoop Recycling",
+    "company_type": "recycling_center",
+    "email": "admin@greenloop.com"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "id": "comp_01hx9r2k4t8vze",
+  "company_name": "GreenLoop Recycling",
+  "company_type": "recycling_center",
+  "email": "admin@greenloop.com",
+  "created_at": "2024-06-12T09:30:00Z"
+}
+```
+
+### Response fields
+
+<ResponseField name="id" type="string">
+  The unique identifier for the newly created company.
+</ResponseField>
+
+<ResponseField name="company_name" type="string">
+  The registered name of the company.
+</ResponseField>
+
+<ResponseField name="company_type" type="string">
+  The operational type: `"recycling_center"` or `"refinery"`.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  The primary admin email address on record.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp indicating when the company was registered.
+</ResponseField>
+
+---
+
+## POST /company/resend-setup
+
+Resend the setup email to a company's registered admin address. Use this if the original setup email was not received or has expired.
+
+### Request body
+
+<ParamField body="company_id" type="string" required>
+  The unique identifier of the company whose setup email should be resent.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/company/resend-setup \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"company_id": "comp_01hx9r2k4t8vze"}'
+```
+
+### Example response
+
+```json
+{
+  "message": "Setup email resent successfully to admin@greenloop.com."
+}
+```
+
+---
+
+## POST /company/setup-admin
+
+Creates the primary Admin user for a company immediately after registration. Call this endpoint with the activation token from the setup email to finalize the company onboarding and establish the first administrator account.
+
+### Request body
+
+<ParamField body="company_id" type="string" required>
+  The unique identifier of the company this admin belongs to.
+</ParamField>
+
+<ParamField body="first_name" type="string" required>
+  The admin user's first name.
+</ParamField>
+
+<ParamField body="last_name" type="string" required>
+  The admin user's last name.
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  The email address for the admin account.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The password for the admin account.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/company/setup-admin \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "company_id": "comp_01hx9r2k4t8vze",
+    "first_name": "Jordan",
+    "last_name": "Kimani",
+    "email": "jordan.kimani@greenloop.com",
+    "password": "secure-admin-password"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "id": "user_03ab7c1f2d9xyz",
+  "first_name": "Jordan",
+  "last_name": "Kimani",
+  "email": "jordan.kimani@greenloop.com",
+  "role": "admin",
+  "company_id": "comp_01hx9r2k4t8vze",
+  "created_at": "2024-06-12T09:45:00Z"
+}
+```
+
+---
+
+## GET /company/
+
+List all registered companies on the platform. Results are paginated — use the `page` and `limit` query parameters to navigate through large sets.
+
+### Query parameters
+
+<ParamField query="page" type="integer">
+  The page number to retrieve. Defaults to `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  The number of records to return per page. Defaults to `20`.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET "https://eloop-api.herokuapp.com/company/?page=1&limit=10" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "total": 42,
+  "page": 1,
+  "limit": 10,
+  "results": [
+    {
+      "id": "comp_01hx9r2k4t8vze",
+      "company_name": "GreenLoop Recycling",
+      "company_type": "recycling_center",
+      "email": "admin@greenloop.com",
+      "created_at": "2024-06-12T09:30:00Z"
+    },
+    {
+      "id": "comp_02ky4s8m6u1abc",
+      "company_name": "MetalPure Refinery",
+      "company_type": "refinery",
+      "email": "ops@metalpure.com",
+      "created_at": "2024-06-10T14:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## GET /company/{company_id}
+
+Retrieve a single company record by its unique identifier.
+
+### Path parameters
+
+<ParamField path="company_id" type="string" required>
+  The unique identifier of the company to retrieve.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET https://eloop-api.herokuapp.com/company/comp_01hx9r2k4t8vze \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "id": "comp_01hx9r2k4t8vze",
+  "company_name": "GreenLoop Recycling",
+  "company_type": "recycling_center",
+  "email": "admin@greenloop.com",
+  "created_at": "2024-06-12T09:30:00Z"
+}
+```
+
+---
+
+## PATCH /company/{company_id}
+
+Update metadata for an existing company record. Supply only the fields you want to change — omitted fields retain their current values.
+
+### Path parameters
+
+<ParamField path="company_id" type="string" required>
+  The unique identifier of the company to update.
+</ParamField>
+
+### Request body
+
+<ParamField body="company_name" type="string">
+  Updated legal or trading name for the company.
+</ParamField>
+
+<ParamField body="email" type="string">
+  Updated primary admin email address for the company.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X PATCH https://eloop-api.herokuapp.com/company/comp_01hx9r2k4t8vze \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"company_name": "GreenLoop Recycling Ltd."}'
+```
+
+### Example response
+
+```json
+{
+  "id": "comp_01hx9r2k4t8vze",
+  "company_name": "GreenLoop Recycling Ltd.",
+  "company_type": "recycling_center",
+  "email": "admin@greenloop.com",
+  "created_at": "2024-06-12T09:30:00Z"
+}
+```
+
+---
+
+## DELETE /company/{company_id}
+
+Delete a company account and all of its associated data from the eLoop platform.
+
+<Warning>
+  This action is **permanent and irreversible**. Deleting a company removes all associated users, e-waste batches, device intake records, scanned device data, and booking history. There is no recovery path once the request completes. Confirm the `company_id` carefully before calling this endpoint.
+</Warning>
+
+### Path parameters
+
+<ParamField path="company_id" type="string" required>
+  The unique identifier of the company to delete.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X DELETE https://eloop-api.herokuapp.com/company/comp_01hx9r2k4t8vze \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "message": "Company comp_01hx9r2k4t8vze and all associated records have been permanently deleted."
+}
+```

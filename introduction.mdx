@@ -1,0 +1,55 @@
+---
+title: "eLoop: AI and IoT Material Intelligence for E-Waste"
+sidebarTitle: "Introduction"
+description: "eLoop is an AI + IoT e-waste platform for recycling operators and refinery buyers — automate sorting, valuation, and B2B procurement in one place."
+---
+
+eLoop is a material intelligence platform that combines edge AI with cloud software to transform how e-waste is sorted, valued, and traded. If you run a recycling center, eLoop replaces manual guesswork on the sorting line with real-time computer vision and automated batch valuation. If you operate a refinery, eLoop gives you a verified digital showroom where you can browse, filter, and book high-quality feedstock batches — no cold calls, no spreadsheets.
+
+## The E-Waste Challenge
+
+The global shift to clean energy has driven unprecedented demand for critical minerals like lithium, cobalt, and gold. Yet the e-waste recovery chain that supplies those minerals remains deeply inefficient:
+
+- **No visibility on the sorting line.** Recycling facilities process thousands of devices without diagnostic tools to quantify rare-earth distribution. Workers rely on visual estimation, which is slow, inconsistent, and systematically undervalues material.
+- **No organized marketplace for buyers.** Industrial refineries have the metallurgical capacity to extract pure elements from scrap, but lack access to a centralized, verified source of graded feedstock.
+- **Fragmented B2B sourcing.** Without a common platform, every transaction between recyclers and refineries involves friction, uncertainty, and significant procurement risk.
+
+## The eLoop Solution
+
+eLoop connects every step of the e-waste supply chain — from physical intake at the recycling yard to a confirmed booking by a refinery buyer — in a single, auditable workflow.
+
+<Steps>
+  <Step title="Register">
+    Log an incoming e-waste shipment in the web app: device type, brand, weight, and source. Every batch starts with a verified intake record.
+  </Step>
+  <Step title="Scan">
+    Connect your Raspberry Pi 5 camera to the sorting line. eLoop's on-device YOLOv8 model classifies components in real time — PCBs, batteries, and more — without sending raw images to the cloud.
+  </Step>
+  <Step title="Value">
+    When you finish a sorting session, eLoop cross-references every classified component against a material composition lookup table and automatically assigns the batch a value tier: **HIGH**, **MEDIUM**, or **LOW**.
+  </Step>
+  <Step title="List">
+    Verified, valued batches are automatically published to the Digital Showroom, where refinery buyers can browse and filter them by tier, material type, and weight.
+  </Step>
+  <Step title="Book">
+    A refinery buyer submits a booking request through the mobile app. eLoop tracks the full procurement lifecycle — from `In Progress` through `Confirmed` or `Cancelled` — in a single state machine.
+  </Step>
+</Steps>
+
+## Who Is eLoop For?
+
+<CardGroup cols={3}>
+  <Card title="Recycling Center Operators" icon="recycle">
+    You register device intakes, run scanning sessions on the sorting line, and close batches for listing. eLoop replaces manual logging and price guesswork with automated classification and valuation.
+  </Card>
+  <Card title="Refinery Buyers" icon="industry">
+    You browse the Digital Showroom to discover verified, tiered e-waste batches and submit booking requests for the feedstocks your facility needs — all from the mobile app.
+  </Card>
+  <Card title="Admins" icon="shield-halved">
+    You manage company accounts, user permissions, and worker rosters across the platform. eLoop gives you a single control panel for onboarding teams and maintaining lifecycle compliance.
+  </Card>
+</CardGroup>
+
+<Note>
+  Ready to get started? Follow the [Quickstart guide](/quickstart) to create your company account, add your team, and process your first batch in minutes.
+</Note>

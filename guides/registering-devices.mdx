@@ -1,0 +1,63 @@
+---
+title: "Register Incoming E-Waste Device Intakes in eLoop"
+sidebarTitle: "Device Intake"
+description: "Learn how recycling center operators log incoming e-waste shipments as Device Intake records to establish chain of custody before scanning begins."
+---
+
+Before scanning can begin, you log the incoming e-waste shipment as a Device Intake record in eLoop. This captures essential metadata about the source hardware — device type, brand, weight, and origin — and establishes the chain of custody that links raw arrivals to the batches you eventually list on the Digital Showroom.
+
+<Note>
+  Device Intake is only available to **Recycling Center** accounts. If you are logged in as a Refinery operator, this section will not appear in your dashboard.
+</Note>
+
+## Logging a New Intake
+
+<Steps>
+
+  <Step title="Open the Device Intake Section">
+    From the eLoop web app dashboard, navigate to the **Device Intake** section using the main sidebar.
+  </Step>
+
+  <Step title="Click Log New Intake">
+    Click the **Log New Intake** button at the top of the intake list to open the registration form.
+  </Step>
+
+  <Step title="Enter the Device Details">
+    Fill in the fields for the incoming shipment:
+
+    | Field | Description |
+    |---|---|
+    | **Device Type** | The category of hardware arriving (e.g., laptop, server, mobile phone) |
+    | **Brand** | The manufacturer or brand of the device |
+    | **Weight (kg)** | Total weight of the incoming shipment in kilograms |
+    | **Source** | The origin of the shipment — company name, location, or vendor |
+
+  </Step>
+
+  <Step title="Submit the Form">
+    Click **Submit** to save the record. eLoop creates an intake entry linked to your user account, and it immediately appears in your intake list with a system-assigned ID and timestamp.
+  </Step>
+
+</Steps>
+
+## Viewing and Managing Intakes
+
+Your full intake history is available in the **Device Intake** section. Intakes are displayed in a paginated list sorted by date. Each row shows the device type, brand, weight, source, and the date it was logged.
+
+To work with an individual record:
+
+- **Open** — click any row to view the full intake details.
+- **Update** — edit the metadata fields on the detail view if you need to correct an entry (for example, updating the weight after a more precise measurement). Changes are saved immediately.
+- **Delete** — if a record was logged in error, open the record and use the delete option to remove it. See the note below before deleting.
+
+<Note>
+  Deleting an intake record is permanent. Only delete a record if it was genuinely logged by mistake. If the device has already entered a scan session, deleting the intake record does not remove the associated batch data.
+</Note>
+
+## Intake and Batch Relationship
+
+A **Device Intake** record represents the raw hardware arriving at your facility — it is the starting point of the material chain. A **Batch** is created when you begin a sorting scan session and starts accumulating AI classifications from the camera.
+
+Multiple device intake records can feed into a single batch session. For example, if three separate shipments of mixed electronics all go onto the sorting line at the same time, you might log three intake records but run them through one scan session as a single batch.
+
+This distinction matters for reporting: intake records track what physically arrived and from where, while batches track what was found inside after classification. For a full explanation of how batches move through the platform, see [Managing Batches](/guides/managing-batches).

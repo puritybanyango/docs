@@ -1,0 +1,358 @@
+---
+title: "Device Intake API: Log Incoming E-Waste Hardware"
+sidebarTitle: "Device Intake"
+description: "Record and manage incoming e-waste hardware shipments at your recycling center. Capture device metadata, weight, and source to establish chain of custody."
+---
+
+The `/device-intake` endpoints let recycling center operators record incoming e-waste hardware shipments. Each intake log captures the device metadata — type, brand, weight, and source — establishing the chain of custody before sorting begins.
+
+## POST /device-intake/
+
+Log a new incoming device intake record. Call this endpoint when a shipment of e-waste hardware arrives at your recycling center before sorting begins.
+
+**Endpoint**
+```
+POST https://eloop-api.herokuapp.com/device-intake/
+```
+
+### Request headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer TOKEN` |
+| `Content-Type` | `application/json` |
+
+### Request body
+
+<ParamField body="device_type" type="string" required>
+  The category of the incoming hardware (e.g., `"laptop"`, `"mobile_phone"`, `"monitor"`).
+</ParamField>
+
+<ParamField body="brand" type="string" required>
+  The manufacturer or brand name of the device (e.g., `"Dell"`, `"Apple"`).
+</ParamField>
+
+<ParamField body="weight_kg" type="number" required>
+  The total weight of the incoming shipment in kilograms.
+</ParamField>
+
+<ParamField body="source" type="string" required>
+  The origin of the shipment — typically the name of the donating organization, collection drive, or partner facility.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/device-intake/ \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_type": "laptop",
+    "brand": "Dell",
+    "weight_kg": 12.5,
+    "source": "Nairobi County Collection Drive"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "id": "di_01HXYZ123456",
+  "device_type": "laptop",
+  "brand": "Dell",
+  "weight_kg": 12.5,
+  "source": "Nairobi County Collection Drive",
+  "user_id": "usr_98ABC789",
+  "created_at": "2024-06-01T09:15:00Z"
+}
+```
+
+### Response fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the newly created device intake record.
+</ResponseField>
+
+<ResponseField name="device_type" type="string">
+  The hardware category as submitted.
+</ResponseField>
+
+<ResponseField name="brand" type="string">
+  The manufacturer or brand name as submitted.
+</ResponseField>
+
+<ResponseField name="weight_kg" type="number">
+  The shipment weight in kilograms as submitted.
+</ResponseField>
+
+<ResponseField name="source" type="string">
+  The shipment origin as submitted.
+</ResponseField>
+
+<ResponseField name="user_id" type="string">
+  The ID of the authenticated operator who logged the intake.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp recording when the intake was logged.
+</ResponseField>
+
+---
+
+## GET /device-intake/
+
+Retrieve a paginated list of all device intakes logged under your company account. Useful for auditing incoming hardware volume across operators.
+
+**Endpoint**
+```
+GET https://eloop-api.herokuapp.com/device-intake/
+```
+
+### Request headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer TOKEN` |
+
+### Query parameters
+
+<ParamField query="page" type="integer" default="1">
+  The page number to retrieve. Starts at `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="20">
+  The number of records to return per page. Maximum is `100`.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET "https://eloop-api.herokuapp.com/device-intake/?page=1&limit=20" \
+  -H "Authorization: Bearer TOKEN"
+```
+
+### Example response
+
+```json
+[
+  {
+    "id": "di_01HXYZ123456",
+    "device_type": "laptop",
+    "brand": "Dell",
+    "weight_kg": 12.5,
+    "source": "Nairobi County Collection Drive",
+    "user_id": "usr_98ABC789",
+    "created_at": "2024-06-01T09:15:00Z"
+  },
+  {
+    "id": "di_01HXYZ123457",
+    "device_type": "mobile_phone",
+    "brand": "Samsung",
+    "weight_kg": 4.2,
+    "source": "Corporate Donation — Safaricom Ltd",
+    "user_id": "usr_98ABC790",
+    "created_at": "2024-06-01T10:30:00Z"
+  }
+]
+```
+
+---
+
+## GET /device-intake/user/\{user_id\}
+
+Retrieve all device intakes logged by a specific operator. Use this to review the intake history for an individual team member.
+
+**Endpoint**
+```
+GET https://eloop-api.herokuapp.com/device-intake/user/{user_id}
+```
+
+### Request headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer TOKEN` |
+
+### Path parameters
+
+<ParamField path="user_id" type="string" required>
+  The unique identifier of the operator whose intake logs you want to retrieve.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET https://eloop-api.herokuapp.com/device-intake/user/usr_98ABC789 \
+  -H "Authorization: Bearer TOKEN"
+```
+
+### Example response
+
+```json
+[
+  {
+    "id": "di_01HXYZ123456",
+    "device_type": "laptop",
+    "brand": "Dell",
+    "weight_kg": 12.5,
+    "source": "Nairobi County Collection Drive",
+    "user_id": "usr_98ABC789",
+    "created_at": "2024-06-01T09:15:00Z"
+  }
+]
+```
+
+---
+
+## GET /device-intake/\{device_id\}
+
+Retrieve a single device intake record by its unique ID. Use this to inspect the full metadata for a specific incoming shipment.
+
+**Endpoint**
+```
+GET https://eloop-api.herokuapp.com/device-intake/{device_id}
+```
+
+### Request headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer TOKEN` |
+
+### Path parameters
+
+<ParamField path="device_id" type="string" required>
+  The unique identifier of the device intake record to retrieve.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET https://eloop-api.herokuapp.com/device-intake/di_01HXYZ123456 \
+  -H "Authorization: Bearer TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "id": "di_01HXYZ123456",
+  "device_type": "laptop",
+  "brand": "Dell",
+  "weight_kg": 12.5,
+  "source": "Nairobi County Collection Drive",
+  "user_id": "usr_98ABC789",
+  "created_at": "2024-06-01T09:15:00Z"
+}
+```
+
+---
+
+## PATCH /device-intake/\{device_id\}
+
+Update one or more fields on an existing device intake record. Send only the fields you want to change — omitted fields are left unchanged.
+
+**Endpoint**
+```
+PATCH https://eloop-api.herokuapp.com/device-intake/{device_id}
+```
+
+### Request headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer TOKEN` |
+| `Content-Type` | `application/json` |
+
+### Path parameters
+
+<ParamField path="device_id" type="string" required>
+  The unique identifier of the device intake record to update.
+</ParamField>
+
+### Request body
+
+<ParamField body="device_type" type="string">
+  Updated hardware category.
+</ParamField>
+
+<ParamField body="brand" type="string">
+  Updated manufacturer or brand name.
+</ParamField>
+
+<ParamField body="weight_kg" type="number">
+  Corrected weight in kilograms.
+</ParamField>
+
+<ParamField body="source" type="string">
+  Corrected shipment origin.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X PATCH https://eloop-api.herokuapp.com/device-intake/di_01HXYZ123456 \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "weight_kg": 13.0,
+    "source": "Nairobi County Collection Drive — Batch 2"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "id": "di_01HXYZ123456",
+  "device_type": "laptop",
+  "brand": "Dell",
+  "weight_kg": 13.0,
+  "source": "Nairobi County Collection Drive — Batch 2",
+  "user_id": "usr_98ABC789",
+  "created_at": "2024-06-01T09:15:00Z"
+}
+```
+
+---
+
+## DELETE /device-intake/\{device_id\}
+
+Delete a device intake record permanently from the system.
+
+**Endpoint**
+```
+DELETE https://eloop-api.herokuapp.com/device-intake/{device_id}
+```
+
+<Warning>
+  Deletion is permanent. Once a device intake record is deleted, it cannot be recovered. Ensure you have confirmed the correct `device_id` before proceeding, as this action removes the record from chain-of-custody logs.
+</Warning>
+
+### Request headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer TOKEN` |
+
+### Path parameters
+
+<ParamField path="device_id" type="string" required>
+  The unique identifier of the device intake record to delete.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X DELETE https://eloop-api.herokuapp.com/device-intake/di_01HXYZ123456 \
+  -H "Authorization: Bearer TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "message": "Device intake record di_01HXYZ123456 has been deleted."
+}
+```

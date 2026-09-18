@@ -1,0 +1,48 @@
+---
+title: "Material Valuation: How eLoop Tiers E-Waste Batches"
+sidebarTitle: "Material Valuation"
+description: "eLoop automatically assigns every finalized batch a HIGH, MEDIUM, or LOW value tier based on AI-classified components and a material composition lookup table."
+---
+
+One of the biggest challenges in e-waste processing is knowing what a pile of scrap is actually worth before you commit to sorting, listing, or buying it. eLoop removes that uncertainty entirely. Every time you finalize a batch, the platform automatically assigns it a **value tier** — **HIGH**, **MEDIUM**, or **LOW** — calculated from the components the edge AI classified during scanning and a built-in material composition lookup table. No manual estimation, no spreadsheets, no guesswork.
+
+## How Valuation Works
+
+Valuation happens automatically in the background as you sort. Here is the sequence:
+
+<Steps>
+  <Step title="Component Classification">
+    As items pass the Raspberry Pi camera on your sorting line, the YOLOv8 model identifies each one across 19 component classes covering PCB and battery types. Every classification result is streamed to the backend and associated with your open batch.
+  </Step>
+  <Step title="Material Composition Lookup">
+    Each classified component type is cross-referenced against eLoop's internal **material composition table**. This table maps each component class to its estimated percentages and weights of precious and critical metals — including gold, silver, copper, cobalt, lithium, aluminium, iron, nickel, and lead.
+  </Step>
+  <Step title="Batch Averaging">
+    The total component weight estimates are aggregated and averaged across every scanned item in the batch. This produces a single composite material profile for the entire lot.
+  </Step>
+  <Step title="Tier Assignment">
+    Based on the averaged composition profile, the system assigns one of three value tiers to the batch: **HIGH**, **MEDIUM**, or **LOW**. This tier is displayed on the batch record and on the Digital Showroom listing that refinery buyers see.
+  </Step>
+</Steps>
+
+<Note>
+  Valuation is triggered automatically when you click **Finish Batch** — you do not need to enter any material data manually. The entire calculation runs in the background and the tier appears on your batch record immediately.
+</Note>
+
+## Value Tiers
+
+| Tier | Meaning | Typical Use |
+|---|---|---|
+| **HIGH** | The batch contains a high proportion of valuable components — such as PCBs with significant gold or copper content — that push the averaged material composition into the top range. | Priority procurement target for refineries seeking high-yield feedstock. |
+| **MEDIUM** | The batch has a mixed composition with a moderate overall material value, combining higher- and lower-value component types. | Standard marketplace listing suitable for general refinery procurement. |
+| **LOW** | The batch is primarily made up of lower-value component classes with minimal precious or critical metal content. | Budget feedstock option for refineries that process high volumes at lower margins. |
+
+## Why Automated Valuation Matters
+
+Before eLoop, recycling center operators had to estimate the value of an e-waste lot by eye — a process that was slow, inconsistent, and almost always inaccurate. Refineries on the buying side faced the same problem: they could not trust that what they were booking matched what would actually arrive.
+
+eLoop replaces visual estimation with software-backed, consistent asset profiling. Every batch is valued using the same underlying data and the same calculation method, regardless of which operator sorted it or which facility it came from. This means:
+
+- **Recycling centers** can list batches with confidence, knowing the tier reflects the real material content.
+- **Refinery buyers** can filter and book with certainty, reducing the risk of procuring low-grade or misrepresented feedstock.
+- **Both sides** get a shared, verifiable basis for B2B pricing — built directly into the platform workflow.

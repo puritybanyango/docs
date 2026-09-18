@@ -1,0 +1,87 @@
+---
+title: "Manage E-Waste Batches from Valuation to Listing"
+sidebarTitle: "Managing Batches"
+description: "View batch status, understand valuation tiers, progress batches through the lifecycle, and manage active bookings from the eLoop dashboard."
+---
+
+Once a sorting scan is finalized, eLoop creates a Batch record containing the scan results, an automated valuation tier, and a lifecycle status. This guide covers how to view, manage, and progress your batches from the moment a scan closes through to a completed transaction with a refinery buyer.
+
+For a deeper conceptual explanation of how batches move through the platform, see the [Batch Lifecycle](/concepts/batch-lifecycle) page.
+
+## Batch Status Overview
+
+Every batch moves through a defined set of statuses as it progresses from your sorting line to a completed sale:
+
+| Status | Meaning |
+|---|---|
+| **In Progress** | The scan session is open and components are still being classified. |
+| **Listed** | The scan is closed, valuation is assigned, and the batch is visible in the Digital Showroom. |
+| **Booked** | A refinery buyer has submitted and confirmed a booking for this batch. |
+| **Completed** | The physical transaction has taken place and the batch is closed out. |
+
+## Viewing Your Batches
+
+Open the **Batches** section from the eLoop dashboard sidebar to see your full batch history. Batches are displayed in a paginated table sorted by date, with columns for Batch ID, Creator, Date, Status, Tier, and Category.
+
+Click any row to open the individual batch detail view. From there you can see:
+
+- **Valuation tier** — HIGH, MEDIUM, or LOW, assigned automatically based on the component mix
+- **Component breakdown** — the count of PCBs, Batteries, and other classified items in this batch
+- **Material composition** — percentage sliders showing estimated recoverable metals (Copper, Gold, Silver, Lithium, and others)
+- **Current status** — where the batch sits in the lifecycle right now
+
+## Finalizing and Listing a Batch
+
+Clicking **Finish Batch** at the end of a scan session triggers a sequence of automated steps:
+
+<Steps>
+
+  <Step title="Scan Session Closes">
+    The camera feed and classification stream are stopped. No further components can be added to this batch.
+  </Step>
+
+  <Step title="Automated Valuation Runs">
+    eLoop cross-references every classified component in the session against the material composition lookup table to calculate estimated metal yields for the batch as a whole.
+  </Step>
+
+  <Step title="Value Tier is Assigned">
+    Based on the composition calculation, the batch receives one of three overall value tiers:
+
+    - **HIGH** — strong concentration of precious or critical metals
+    - **MEDIUM** — moderate recoverable value
+    - **LOW** — lower-grade material mix
+  </Step>
+
+  <Step title="Status Transitions to Listed">
+    The batch status moves from **In Progress** to **Listed** automatically. You do not need to take any manual action to publish it.
+  </Step>
+
+  <Step title="Batch Appears in the Digital Showroom">
+    The Listed batch is immediately visible to refinery buyers browsing the Digital Showroom catalog. Buyers can see the value tier badge, component summary, and your facility as the source.
+  </Step>
+
+</Steps>
+
+## Managing Active Bookings
+
+Once a refinery buyer books your batch, its status transitions to **Booked**. At this point:
+
+- Open the batch detail view to see the associated booking information, including the buyer's details and the booking timestamp.
+- The batch is locked — it no longer appears as available to other buyers in the Showroom.
+- When the physical handover or transaction is complete, open the batch and update its status to **Completed** to close it out in your records.
+
+<Warning>
+  Marking a batch as **Completed** is irreversible. Once a batch is completed, it cannot be re-listed or re-opened for booking. Make sure the transaction is fully resolved before updating the status.
+</Warning>
+
+## Deleting a Batch
+
+If you created a batch by mistake — for example, you opened a scan session accidentally and closed it immediately — you can delete it from the batch detail view.
+
+**Deletion rules:**
+
+- Batches can only be deleted while their status is **In Progress**.
+- Once a batch has been Listed or Booked, it cannot be deleted.
+- Deletion is permanent and removes all associated scan records for that session.
+
+If you need to remove a Listed or Booked batch, contact your eLoop account administrator for assistance.

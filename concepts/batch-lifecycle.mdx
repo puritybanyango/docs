@@ -1,0 +1,46 @@
+---
+title: "E-Waste Batch Lifecycle: Intake to Completion"
+sidebarTitle: "Batch Lifecycle"
+description: "Understand the four batch status states and two booking states that track every e-waste lot from active sorting through to completed procurement."
+---
+
+In eLoop, a **batch** is the core unit of trade — an aggregated lot of e-waste components captured during a single sorting session at a recycling center. Every component scanned on the sorting line belongs to a batch, and every batch moves through a defined lifecycle that takes it from active scanning all the way through to a completed procurement transaction. Understanding the batch lifecycle helps you know exactly where a lot stands at any given moment, whether you are the operator sorting it or the refinery buyer procuring it.
+
+## Batch Status States
+
+The four batch statuses form a linear progression:
+
+```text
+In Progress → Listed → Booked → Completed
+```
+
+| Status | What It Means |
+|---|---|
+| **In Progress** | The batch is actively being scanned. The edge AI is classifying components as they pass the camera, and results are streaming into the dashboard in real time. The operator has not yet finalized the batch. |
+| **Listed** | The operator clicked **Finish Batch**. Valuation has been calculated automatically and a HIGH / MEDIUM / LOW tier assigned. The batch is now published to the Digital Showroom and visible to all refinery buyers. |
+| **Booked** | A refinery buyer submitted a booking request and it has been confirmed. The batch is reserved for that buyer and is no longer available for other bookings. |
+| **Completed** | The physical procurement transaction is done. The batch is closed and archived in both the recycling center's and refinery's history. |
+
+## Booking Status
+
+Every booking attached to a batch has its own parallel status lifecycle:
+
+```text
+In Progress → Confirmed | Cancelled
+```
+
+| Status | What It Means |
+|---|---|
+| **In Progress** | A refinery buyer has submitted a booking request. The request is awaiting confirmation from the recycling center. The batch remains in *Listed* status during this window. |
+| **Confirmed** | The recycling center has accepted the booking. The batch automatically advances to *Booked* status, and the refinery buyer is notified. |
+| **Cancelled** | The booking was rejected by the recycling center or withdrawn by the buyer. The batch returns to *Listed* status and is once again available for other buyers to book. |
+
+## One Batch, One Booking
+
+A listed batch can only have one **active booking** at a time. This is a strict one-to-one relationship — once a booking is *In Progress* or *Confirmed* for a batch, no other buyer can submit a competing request for the same lot. If the booking is *Cancelled*, the batch returns to *Listed* and the next buyer can book it.
+
+<Warning>
+  Once a batch reaches **Completed** status, it is permanently closed and cannot be re-listed or re-booked. Make sure all physical handover and transaction details are confirmed before marking a batch as completed.
+</Warning>
+
+For step-by-step instructions on creating, finalizing, and managing batches, see the [Managing Batches](/guides/managing-batches) guide.

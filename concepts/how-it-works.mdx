@@ -1,0 +1,46 @@
+---
+title: "How eLoop Works: From Intake to Marketplace"
+sidebarTitle: "How It Works"
+description: "Follow an e-waste batch from the moment it arrives at a recycling center to the point a refinery buyer books it through the Digital Showroom."
+---
+
+eLoop connects the physical world of e-waste sorting to a verified B2B materials marketplace in a single, continuous pipeline. When a box of old electronics arrives at your recycling center, eLoop captures every component on the sorting line, classifies it in real time using edge AI, rolls it into a valued batch, and automatically publishes that batch for refinery buyers to discover and book — all without manual data entry or guesswork at any stage.
+
+## End-to-End Pipeline
+
+<Steps>
+  <Step title="Device Intake">
+    A recycling center operator registers the incoming e-waste shipment through the web app. You record the device type, brand, weight, and source of the arriving material. This creates the foundational record that all downstream scanning and valuation data is attached to.
+  </Step>
+  <Step title="Edge Scanning">
+    As components move along the sorting line, a high-resolution camera connected to a **Raspberry Pi 5** captures overhead images. A custom-trained **YOLOv8** model — running entirely on the Raspberry Pi — classifies each component it sees in real time, identifying it as a **PCB (Printed Circuit Board)** or **Battery** across 19 distinct sub-classes. You see live results appear in your scanning dashboard as each item passes the camera.
+  </Step>
+  <Step title="Telemetry Streaming">
+    Each classification result is immediately pushed from the Raspberry Pi to the eLoop cloud backend over a persistent **WebSocket** connection. Your dashboard updates in real time, giving you and your team an always-current view of what has been sorted so far — with no manual logging required.
+  </Step>
+  <Step title="Batch Valuation">
+    As component classifications accumulate, eLoop cross-references each identified type against the internal **material composition lookup table**. This table maps PCB and battery classes to their estimated precious and critical metal percentages (gold, copper, lithium, cobalt, and others) and weights. When you finalize the batch, the system averages the component weight estimates across the full lot and assigns it a value tier: **HIGH**, **MEDIUM**, or **LOW**.
+  </Step>
+  <Step title="Digital Showroom Listing">
+    The moment you click **Finish Batch**, the batch is automatically published to the **Digital Showroom** — eLoop's B2B sourcing marketplace. Its status moves from *In Progress* to *Listed*, and refinery buyers can immediately browse, filter by value tier, and view its composition details.
+  </Step>
+  <Step title="Booking & Procurement">
+    A refinery buyer submits a booking request for your listed batch through the Digital Showroom (on web or mobile). Once you confirm the booking, the batch status advances to *Booked* and is reserved for that buyer. When the physical procurement transaction is complete, you close the batch and it moves to *Completed*.
+  </Step>
+</Steps>
+
+## Key Data Flows
+
+The diagram below shows how data moves through the eLoop platform from the physical sorting line to the marketplace:
+
+```text
+[Device Intake] → [Edge AI Scan] → [Batch Valuation] → [Digital Showroom] → [Booking]
+  Operator          Raspberry Pi 5     HIGH / MED / LOW    Refinery buyers     Confirmed
+  registers         YOLOv8 classifies  auto-calculated     browse & filter     & completed
+  incoming          PCBs & batteries   on batch close      verified listings
+  e-waste           in real time
+```
+
+<Note>
+  Edge inference runs entirely on the Raspberry Pi at your sorting line. Raw camera images never leave your facility — only lightweight classification results (for example, "PCB" or "Battery") are transmitted to the cloud backend. This keeps your network bandwidth low and your visual data private.
+</Note>

@@ -1,0 +1,73 @@
+---
+title: "Using the eLoop Mobile App for Showroom and Team Management"
+sidebarTitle: "Mobile App"
+description: "Access the Digital Showroom, manage batch bookings, and administer your worker roster from the eLoop Flutter mobile app on your phone."
+---
+
+The eLoop mobile app gives refinery operators and company admins access to the Digital Showroom, booking management, and the worker roster — all optimized for on-the-go use on a phone. Whether you are on the floor of your refinery, in a procurement meeting, or traveling between sites, the mobile app keeps your eLoop workflow within reach.
+
+<Note>
+  The mobile app does not support sorting-line scanning. That workflow — connecting to the Raspberry Pi 5 camera station and classifying components in real time — runs through the eLoop **web app** on a device physically present at the sorting line. See the [Scanning & Sorting guide](/guides/scanning-sorting) for details.
+</Note>
+
+## Who Uses the Mobile App
+
+The mobile app serves two roles:
+
+<CardGroup cols={2}>
+  <Card title="Refinery Operator" icon="magnifying-glass">
+    Browse the batch catalog in the Digital Showroom, submit booking requests, and view the full history of your bookings with current status badges.
+  </Card>
+  <Card title="Company Admin" icon="users">
+    Everything a Refinery Operator can do, plus full worker management: add new team members, update existing profiles, deactivate accounts, and reset credentials.
+  </Card>
+</CardGroup>
+
+Both Recycling Center Admins and Refinery Admins can use the mobile app for team management. The catalog and booking features are scoped to Refinery accounts.
+
+## Signing In
+
+When you open the eLoop mobile app for the first time, you will land on the sign-in screen after a brief splash screen.
+
+1. Enter your **Email** and **Password** — the same credentials you use on the web app.
+2. Tap **Sign In**.
+3. Your session remains active until you explicitly log out. The app securely stores your session so you do not need to sign in again each time you reopen it.
+
+To end your session, open your profile settings and tap **Log Out**.
+
+## Browsing the Catalog
+
+The **Catalog** tab is your entry point to the Digital Showroom on mobile. It displays all currently Listed batches from recycling centers on the platform.
+
+From the catalog you can:
+
+- **Scroll and browse** the full list of available batches
+- **Filter by value tier** — select HIGH, MEDIUM, or LOW to narrow the list
+- **Tap any batch** to open its detail view, including the component breakdown and material composition summary
+
+<Tip>
+  For a full walkthrough of the booking workflow — including what to check before committing to a batch and how to track your bookings — see the [Digital Showroom guide](/guides/digital-showroom).
+</Tip>
+
+## Managing Bookings
+
+The **My Bookings** tab shows all bookings you have submitted, both active and historical. Each booking displays a status badge so you can track where things stand at a glance:
+
+| Status | Meaning |
+|---|---|
+| **In Progress** | Your booking request has been submitted and is awaiting confirmation from the recycling center. |
+| **Confirmed** | The recycling center has confirmed your booking. The batch is reserved for you. |
+| **Cancelled** | The booking was cancelled — either by you or by the recycling center. |
+
+Tap any booking to open the full detail view, including the source recycling center's information, the batch material report, and timestamps for each status change.
+
+## Worker Management (Admins Only)
+
+If your account has the **Admin** role, you will see a **Workers** tab in the bottom navigation bar. From here you can manage your company's entire team roster:
+
+- **View all workers** — see each team member's name, email, and role at a glance.
+- **Add a new worker** — tap the add button, enter the new user's first name, last name, email, and assign a role (Admin or Worker).
+- **Update a profile** — tap any worker to edit their name, email, or role.
+- **Deactivate an account** — suspend a team member's access without permanently deleting their records. This is the recommended approach when someone leaves the company.
+
+All changes made in the Workers tab on mobile are reflected immediately across the platform, including the web app.

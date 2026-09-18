@@ -1,0 +1,365 @@
+---
+title: "Users API: Manage User Profiles and Roles"
+sidebarTitle: "Users"
+description: "Create, retrieve, update, and deactivate user accounts with the /user endpoints for managing operators and admins within your company."
+---
+
+The `/user` endpoints manage individual user accounts within a company. Admins use these to add workers, retrieve profiles, update roles, and deactivate access. All requests require an `Authorization: Bearer TOKEN` header obtained from [`POST /auth/login`](/api/auth#post-authlogin). Users are always scoped to the authenticated Admin's company — you cannot read or modify users belonging to another tenant.
+
+---
+
+## POST /user/
+
+Create a new user account under the authenticated Admin's company. The `role` field determines the access level: `"admin"` users can manage the company and its members, while `"worker"` users have operational access to intake and batch workflows.
+
+### Request body
+
+<ParamField body="first_name" type="string" required>
+  The new user's first name.
+</ParamField>
+
+<ParamField body="last_name" type="string" required>
+  The new user's last name.
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  The email address for the new user. Must be unique across the platform.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The initial password for the new user's account.
+</ParamField>
+
+<ParamField body="role" type="string" required>
+  The access role to assign. Accepted values: `"admin"` or `"worker"`.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/user/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "Amara",
+    "last_name": "Osei",
+    "email": "amara.osei@greenloop.com",
+    "password": "secure-worker-password",
+    "role": "worker"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "id": "user_07cd3e9f1a2bgh",
+  "first_name": "Amara",
+  "last_name": "Osei",
+  "email": "amara.osei@greenloop.com",
+  "role": "worker",
+  "company_id": "comp_01hx9r2k4t8vze",
+  "created_at": "2024-06-13T08:15:00Z"
+}
+```
+
+### Response fields
+
+<ResponseField name="id" type="string">
+  The unique identifier for the newly created user.
+</ResponseField>
+
+<ResponseField name="first_name" type="string">
+  The user's first name.
+</ResponseField>
+
+<ResponseField name="last_name" type="string">
+  The user's last name.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  The user's email address.
+</ResponseField>
+
+<ResponseField name="role" type="string">
+  The assigned role: `"admin"` or `"worker"`.
+</ResponseField>
+
+<ResponseField name="company_id" type="string">
+  The identifier of the company this user belongs to.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp indicating when the user account was created.
+</ResponseField>
+
+---
+
+## GET /user/
+
+List all users in the authenticated Admin's company. Results are paginated — use the `page` and `limit` query parameters to navigate through larger teams.
+
+### Query parameters
+
+<ParamField query="page" type="integer">
+  The page number to retrieve. Defaults to `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  The number of user records to return per page. Defaults to `20`.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET "https://eloop-api.herokuapp.com/user/?page=1&limit=10" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "total": 8,
+  "page": 1,
+  "limit": 10,
+  "results": [
+    {
+      "id": "user_07cd3e9f1a2bgh",
+      "first_name": "Amara",
+      "last_name": "Osei",
+      "email": "amara.osei@greenloop.com",
+      "role": "worker",
+      "company_id": "comp_01hx9r2k4t8vze",
+      "created_at": "2024-06-13T08:15:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## GET /user/me
+
+Retrieve the profile of the currently authenticated user. This endpoint is useful for confirming token identity, displaying profile information in your application, or verifying role-based permissions at runtime. No additional parameters are required.
+
+### Example request
+
+```bash
+curl -X GET https://eloop-api.herokuapp.com/user/me \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "id": "user_03ab7c1f2d9xyz",
+  "first_name": "Jordan",
+  "last_name": "Kimani",
+  "email": "jordan.kimani@greenloop.com",
+  "role": "admin",
+  "company_id": "comp_01hx9r2k4t8vze",
+  "created_at": "2024-06-12T09:45:00Z"
+}
+```
+
+---
+
+## GET /user/directory/names
+
+Returns a lightweight list of public name mappings for all active users in your organization's directory. Use this endpoint to populate assignee pickers, audit log displays, or any UI element that needs to resolve user IDs to human-readable names without fetching full profile objects.
+
+### Example request
+
+```bash
+curl -X GET https://eloop-api.herokuapp.com/user/directory/names \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+[
+  {
+    "id": "user_03ab7c1f2d9xyz",
+    "full_name": "Jordan Kimani"
+  },
+  {
+    "id": "user_07cd3e9f1a2bgh",
+    "full_name": "Amara Osei"
+  }
+]
+```
+
+### Response fields
+
+<ResponseField name="id" type="string">
+  The unique identifier for the user.
+</ResponseField>
+
+<ResponseField name="full_name" type="string">
+  The user's full display name derived from `first_name` and `last_name`.
+</ResponseField>
+
+---
+
+## GET /user/{user_id}
+
+Retrieve the full profile of a single user by their unique identifier. The requested user must belong to the same company as the authenticated caller.
+
+### Path parameters
+
+<ParamField path="user_id" type="string" required>
+  The unique identifier of the user to retrieve.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X GET https://eloop-api.herokuapp.com/user/user_07cd3e9f1a2bgh \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "id": "user_07cd3e9f1a2bgh",
+  "first_name": "Amara",
+  "last_name": "Osei",
+  "email": "amara.osei@greenloop.com",
+  "role": "worker",
+  "company_id": "comp_01hx9r2k4t8vze",
+  "created_at": "2024-06-13T08:15:00Z"
+}
+```
+
+---
+
+## PATCH /user/{user_id}
+
+Update a user's profile details or change their role. Supply only the fields you want to modify — omitted fields retain their current values. Only Admins can update another user's `role`.
+
+### Path parameters
+
+<ParamField path="user_id" type="string" required>
+  The unique identifier of the user to update.
+</ParamField>
+
+### Request body
+
+<ParamField body="first_name" type="string">
+  Updated first name for the user.
+</ParamField>
+
+<ParamField body="last_name" type="string">
+  Updated last name for the user.
+</ParamField>
+
+<ParamField body="email" type="string">
+  Updated email address for the user. Must remain unique across the platform.
+</ParamField>
+
+<ParamField body="role" type="string">
+  Updated role assignment. Accepted values: `"admin"` or `"worker"`.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X PATCH https://eloop-api.herokuapp.com/user/user_07cd3e9f1a2bgh \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "admin"}'
+```
+
+### Example response
+
+```json
+{
+  "id": "user_07cd3e9f1a2bgh",
+  "first_name": "Amara",
+  "last_name": "Osei",
+  "email": "amara.osei@greenloop.com",
+  "role": "admin",
+  "company_id": "comp_01hx9r2k4t8vze",
+  "created_at": "2024-06-13T08:15:00Z"
+}
+```
+
+---
+
+## PATCH /user/{user_id}/deactivate
+
+Deactivate a user account, immediately revoking their API access. The user's token is invalidated upon deactivation and all subsequent requests made with that token will return `401 Unauthorized`.
+
+<Note>
+  Deactivated accounts are not deleted — their historical records (device intake logs, batch entries, and booking activity) are preserved. An Admin can reactivate the account at any time by updating the user's status through the appropriate endpoint.
+</Note>
+
+### Path parameters
+
+<ParamField path="user_id" type="string" required>
+  The unique identifier of the user account to deactivate.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X PATCH https://eloop-api.herokuapp.com/user/user_07cd3e9f1a2bgh/deactivate \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example response
+
+```json
+{
+  "id": "user_07cd3e9f1a2bgh",
+  "status": "deactivated",
+  "message": "User account has been deactivated. All active sessions have been revoked."
+}
+```
+
+---
+
+## PATCH /user/me
+
+Update your own profile details using your active session token. Use this endpoint to let authenticated users manage their own first name, last name, or email address without requiring Admin intervention. Role changes are not permitted through this endpoint — an Admin must assign roles via [`PATCH /user/{user_id}`](#patch-useruser_id).
+
+### Request body
+
+<ParamField body="first_name" type="string">
+  Your updated first name.
+</ParamField>
+
+<ParamField body="last_name" type="string">
+  Your updated last name.
+</ParamField>
+
+<ParamField body="email" type="string">
+  Your updated email address. Must remain unique across the platform.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X PATCH https://eloop-api.herokuapp.com/user/me \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "Jordan", "last_name": "Kimani-Waweru"}'
+```
+
+### Example response
+
+```json
+{
+  "id": "user_03ab7c1f2d9xyz",
+  "first_name": "Jordan",
+  "last_name": "Kimani-Waweru",
+  "email": "jordan.kimani@greenloop.com",
+  "role": "admin",
+  "company_id": "comp_01hx9r2k4t8vze",
+  "created_at": "2024-06-12T09:45:00Z"
+}
+```

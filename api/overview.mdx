@@ -1,0 +1,101 @@
+---
+title: "eLoop REST API Reference Overview"
+sidebarTitle: "Overview"
+description: "Explore eLoop's REST API: base URLs, JSON data format, JWT auth, interactive docs, all seven resource groups, and HTTP status codes."
+---
+
+The eLoop REST API is the backbone of the platform — it connects edge hardware (Raspberry Pi 5 sorting units), the operator web app, and the mobile Digital Showroom to the cloud backend. You can use it to manage company accounts, track device intakes and batches, read AI classification results, and coordinate batch bookings. All communication uses standard HTTPS, and every response is JSON.
+
+## Base URLs
+
+Route your requests to the correct environment based on your deployment context.
+
+| Environment | Base URL |
+|---|---|
+| Production | `https://eloop-api.herokuapp.com` |
+| Local Development | `http://127.0.0.1:8000` |
+
+<Warning>
+  The production server runs on a Heroku Eco Dyno. If no requests have been made for **30 minutes**, the dyno enters sleep mode. The first request after a period of inactivity may take **10–30 seconds** to respond while the server wakes up. Build this into your client's timeout and retry logic.
+</Warning>
+
+## Request Format
+
+All requests and responses use `application/json`. For any request that includes a body — such as `POST` or `PATCH` — you must set the `Content-Type` header explicitly.
+
+```bash
+Content-Type: application/json
+```
+
+Omitting this header on requests with a body will result in a `422 Unprocessable Entity` response.
+
+## Authentication
+
+All endpoints require a valid JWT Bearer token in the `Authorization` header, with the following exceptions that are publicly accessible:
+
+- `POST /auth/login`
+- `POST /auth/forgot-password`
+- `POST /auth/reset-password`
+
+Pass your token on every protected request:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+See the [Authentication guide](/api/authentication) for full details on obtaining tokens, token scope, and the password reset flow.
+
+## Interactive Documentation
+
+eLoop exposes three built-in API explorer interfaces directly from the production server. Use these to browse schemas, inspect request/response models, and test endpoints without writing any code.
+
+| Interface | URL |
+|---|---|
+| Swagger UI (interactive sandbox) | `https://eloop-api.herokuapp.com/docs` |
+| ReDoc (structured reference) | `https://eloop-api.herokuapp.com/redoc` |
+| OpenAPI JSON spec | `https://eloop-api.herokuapp.com/openapi.json` |
+
+You can import the OpenAPI JSON into tools like Postman, Insomnia, or any SDK generator.
+
+## API Resources
+
+The API is organised into seven resource groups. Each group owns a distinct part of the eLoop data model.
+
+<CardGroup cols={2}>
+  <Card title="Auth" icon="key" href="/api/auth">
+    Sign in with credentials and receive a JWT session token. Initiate and complete password resets. Base path: `/auth`
+  </Card>
+  <Card title="Companies" icon="building" href="/api/companies">
+    Register and manage multi-tenant company accounts, resend setup emails, and configure admin profiles. Base path: `/company`
+  </Card>
+  <Card title="Users" icon="user" href="/api/users">
+    Create, retrieve, update, and deactivate user profiles and roles within a company tenant. Base path: `/user`
+  </Card>
+  <Card title="Device Intake" icon="server" href="/api/device-intake">
+    Log incoming e-waste hardware arriving at a processing centre and manage device inventory records. Base path: `/device-intake`
+  </Card>
+  <Card title="Scanned Devices" icon="camera" href="/api/scanned-devices">
+    Read and manage AI classification results streamed from edge cameras on the sorting line. Base path: `/api/scanned-devices`
+  </Card>
+  <Card title="Batches" icon="boxes-stacked" href="/api/batches">
+    Create and track e-waste batches through valuation, grading (High / Medium / Low), and marketplace listing. Base path: `/api/batches`
+  </Card>
+  <Card title="Bookings" icon="handshake" href="/api/bookings">
+    Register and manage procurement booking transactions between recycling centres and refinery buyers. Base path: `/api/booking`
+  </Card>
+</CardGroup>
+
+## HTTP Status Codes
+
+Every eLoop API response includes a standard HTTP status code. Use the table below as your first reference when handling errors in your integration.
+
+| Code | Meaning |
+|---|---|
+| `200` | **Success** — the request completed and the response body contains the result. |
+| `201` | **Created** — a new resource was successfully created. |
+| `400` | **Bad Request** — the request was malformed. Check the request body and query parameters. |
+| `401` | **Unauthorized** — the `Authorization` header is missing, malformed, or the token has expired. |
+| `403` | **Forbidden** — your token is valid but your role does not have permission for this action. |
+| `404` | **Not Found** — the requested resource does not exist or has been deleted. |
+| `422` | **Unprocessable Entity** — the request body failed schema validation. Check field types and required fields. |
+| `500` | **Server Error** — an unexpected error occurred on the server. Contact eLoop support with the request ID. |

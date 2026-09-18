@@ -1,0 +1,86 @@
+---
+title: "API Authentication: JWT Tokens for eLoop"
+sidebarTitle: "Authentication"
+description: "Learn how to obtain a JWT Bearer token by logging in and how to attach it to every eLoop API request to authenticate successfully."
+---
+
+The eLoop API uses stateless JWT (JSON Web Token) authentication. Every request to a protected endpoint must include your token in the `Authorization: Bearer` header. Tokens are issued at login, scoped to your user's company and role, and expire after a configurable window — by default, 30 minutes. There are no cookies or server-side sessions involved.
+
+## Obtaining a Token
+
+Send your credentials to `POST /auth/login` to receive an access token. This endpoint is publicly accessible and does not require an existing token.
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@yourcompany.com", "password": "your-password"}'
+```
+
+A successful login returns a JSON object with your access token and its type:
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}
+```
+
+Store the value of `access_token` securely in memory (or a secrets manager). You will attach it to every subsequent API request.
+
+## Using the Token
+
+Include the token in the `Authorization` header of every request to a protected endpoint. Use the `Bearer` scheme exactly as shown below.
+
+```bash
+curl https://eloop-api.herokuapp.com/user/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+Replace `YOUR_ACCESS_TOKEN` with the full `access_token` string from your login response. If the header is missing or the token is expired, the API returns `401 Unauthorized`.
+
+<Warning>
+  Never commit your access token to version control, log it to standard output, or embed it in client-side source code. Store tokens in environment variables or a dedicated secrets manager.
+</Warning>
+
+## Token Scope
+
+Tokens are scoped to the authenticated user's **company tenant** and **role**. The role embedded in the JWT determines which endpoints you can reach:
+
+- **Admin** tokens grant access to company management, user administration, and all data endpoints within the tenant.
+- **Worker** tokens are limited to their permitted operational actions, such as logging device intakes, submitting scans, and managing their own profile.
+
+Attempting to call an endpoint outside your role's permission set returns `403 Forbidden`. If you receive this error, verify that you are authenticating with an account that has the required role for the operation.
+
+## Password Reset Flow
+
+If you need to reset a password, eLoop provides a two-step unauthenticated flow. Both endpoints are publicly accessible — no token is required.
+
+**Step 1 — Request a reset email.** Submit the account email address to trigger a reset link:
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@yourcompany.com"}'
+```
+
+eLoop will send an email containing a short-lived reset token to the address on file.
+
+**Step 2 — Set a new password.** Use the token from the reset email together with your new password:
+
+```bash
+curl -X POST https://eloop-api.herokuapp.com/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"token": "RESET_TOKEN", "new_password": "new-secure-password"}'
+```
+
+Replace `RESET_TOKEN` with the token value from the email link. Once the reset succeeds, use your new password to call `/auth/login` and obtain a fresh access token.
+
+## Authentication Errors
+
+Use the table below to diagnose and resolve authentication-related error responses.
+
+| Code | Error | What to do |
+|---|---|---|
+| `401` | **Unauthorized** | Your `Authorization` header is missing, the token is malformed, or the token has expired. Call `POST /auth/login` again to obtain a fresh token and retry the request. |
+| `403` | **Forbidden** | Your token is valid but your account role does not have permission for this endpoint. Verify you are using an account with the correct role (e.g., Admin vs. Worker). |
+| `422` | **Unprocessable Entity** | The request body failed validation — for example, the `email` field is missing or the password field is empty. Check the response body for a detailed list of validation errors and correct your payload. |

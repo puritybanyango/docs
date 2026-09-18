@@ -1,0 +1,74 @@
+---
+title: "eLoop Platform Architecture and Component Overview"
+sidebarTitle: "Platform Overview"
+description: "Explore eLoop's three core components — edge AI hardware, cloud backend, and user interfaces — and understand how they work together end to end."
+---
+
+eLoop is built on three tightly integrated pillars: **Edge Hardware** (a Raspberry Pi 5 with a high-resolution camera running a local AI model), a **Cloud Backend** (a FastAPI server backed by a PostgreSQL database), and **User Interfaces** (a Next.js Progressive Web App for recycling operators and a Flutter mobile app for refinery buyers). Each pillar handles a specific part of the workflow, and together they take an e-waste device from physical intake to verified batch listing — without any manual valuation steps in between.
+
+## Edge Hardware & AI
+
+The sorting intelligence in eLoop lives at the edge, not the cloud. A camera array mounted over the sorting line captures continuous image frames and feeds them to a Raspberry Pi 5 running a YOLOv8 object detection model entirely on-device. The model identifies and classifies e-waste components — PCBs, batteries, and more — in real time as they move through frame.
+
+Keeping inference on the edge means:
+
+- **No cloud round-trip latency.** Classification results appear immediately on the operator's dashboard, giving workers live feedback without waiting for a server response.
+- **Reduced bandwidth.** Only lightweight classification metadata (component type, count, confidence) is sent upstream over a persistent WebSocket connection. Raw images never leave the device.
+- **Resilience.** The sorting line continues to classify even if the cloud connection is momentarily degraded.
+
+<Note>
+  The first scan after a period of inactivity may take **10–30 seconds** to begin streaming results. This is a normal cold-start delay as the cloud server wakes up from an idle state. Subsequent scans within the same active session start immediately.
+</Note>
+
+## Cloud Backend
+
+The eLoop API is a **FastAPI** server hosted on Heroku and backed by a **PostgreSQL** relational database. It acts as the central logic engine for the entire platform — validating incoming classification events from the edge, running material composition calculations, assigning value tiers, managing batch lifecycle state, and serving batch data to both the web app and the mobile app.
+
+Key technical details you should know:
+
+| Property | Value |
+|---|---|
+| **Framework** | FastAPI (async Python, built on Starlette and Pydantic) |
+| **Database** | PostgreSQL (relational; stores inventory records, user accounts, and lifecycle logs) |
+| **Transport Security** | HTTPS / TLS 1.3 enforced on all production traffic |
+| **Authentication** | Stateless JWT tokens, passed as `Authorization: Bearer <TOKEN>` |
+| **Data Format** | `application/json` for all request and response payloads |
+
+**Base URLs:**
+
+- **Production:** `https://herokuapp.com` — used by deployed Raspberry Pi units, the Operator PWA, and the mobile app
+- **Local Development:** `http://127.0.0.1:8000` — used for offline debugging and feature development
+
+## Web App (Operator PWA)
+
+The eLoop web application is a **Next.js Progressive Web App** designed for use by Recycling Center Operators and Admins — including on the physical sorting line, where workers may be wearing gloves. It is the primary interface for everything that happens before a batch is listed.
+
+From the web app you can:
+
+- **Register device intakes** — log incoming e-waste shipments with device type, brand, weight, and source
+- **Run live scanning sessions** — view the real-time classification feed from the Raspberry Pi camera as components are sorted
+- **Manage batches** — review composition breakdowns, confirm value tiers, and close batches to trigger automatic listing
+- **Manage your team** — add workers and admins, assign roles, and reset credentials
+
+Recycling Center Admins and refinery Admins both use the web app for account and team management, but only Recycling Center users access the scanning and batch management features.
+
+## Mobile App (Digital Showroom)
+
+The eLoop mobile application is a **Flutter** app built for Refinery Operators and Admins. Where the web app focuses on the physical sorting workflow, the mobile app focuses on procurement — browsing verified batch listings and managing bookings.
+
+From the mobile app you can:
+
+- **Browse the batch catalog** — filter verified e-waste batches by value tier, material type, and weight to find feedstock that matches your refinery's needs
+- **Submit and manage bookings** — request a batch and track your booking from `In Progress` through `Confirmed` or `Cancelled`
+- **Manage your worker roster** (Admins only) — add, update, and deactivate Refinery Worker accounts, and manage TOTP settings
+
+The mobile app does not include sorting-line scanning. That workflow runs on the Operator PWA against the live Raspberry Pi camera feed.
+
+<CardGroup cols={2}>
+  <Card title="Core Concepts" icon="lightbulb" href="/concepts/how-it-works">
+    Understand how batches, bookings, and value tiers work — and how state flows through the eLoop lifecycle engine.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/overview">
+    Explore every endpoint used by the edge hardware, the Operator PWA, and the Digital Showroom mobile app.
+  </Card>
+</CardGroup>
